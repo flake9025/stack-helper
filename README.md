@@ -50,7 +50,7 @@ public class Pet extends AbstractModelGenereatedId<Integer>{
 ```
 
 ### DTO
-All you have to do is to extend the Abstrac Dto class.
+All you have to do is to extend the Abstract Dto class.
 You can choose to use the same DTO for both Read and Write operations, or use a different one for each.
 for example :
 
