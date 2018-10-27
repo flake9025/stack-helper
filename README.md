@@ -20,8 +20,9 @@ It will produce a Web Controller and a Service Layer, with the following operati
 - deleteByIdList
 
 ### Prerequisites
-- Spring 5
-- Spring Data 2
+- Spring MVC (for REST Controllers)
+- Spring 5 (for IOC and Beans)
+- Spring Data 2 (for Persistence)
 
 ## Getting Started
 
