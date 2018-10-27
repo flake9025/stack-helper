@@ -28,7 +28,7 @@ public interface AbstractMapper<T extends Persistable<K>, K extends Serializable
 	 * @param model the model
 	 * @return the s
 	 */
-	public S mapToDto(T model);
+	public S mapToDto(final T model);
 	
 	/**
 	 * Convert write dto to model.
@@ -36,5 +36,5 @@ public interface AbstractMapper<T extends Persistable<K>, K extends Serializable
 	 * @param writeDto the write dto
 	 * @return the t
 	 */
-	public T mapToModel(U writeDto);
+	public T mapToModel(final U writeDto);
 }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -95,15 +96,42 @@ public abstract class AbstractRestController<T extends Persistable<K>, K extends
 	}
 
 	/**
-	 * Save.
+	 * Create.
 	 *
 	 * @param dto the dto
 	 * @return the response
 	 */
     @PostMapping
-	public ResponseEntity<T> save(U dto) {
+	public ResponseEntity<T> create(U dto) {
 		try {
-			T savedObject = service.save(dto);
+			T savedObject = service.create(dto);
+			
+	        if (savedObject == null)
+	            return ResponseEntity.noContent().build();
+	        
+	        URI location = ServletUriComponentsBuilder
+	                .fromCurrentRequest()
+	                .path("/{id}")
+	                .buildAndExpand(savedObject.getId())
+	                .toUri();
+	        
+	        return ResponseEntity.created(location).build();
+		} catch (Exception e) {
+			log.error("save({}) KO : {}", dto, e.getMessage(), e);
+			throw new InternalServerErrorException(e.getMessage());
+		}
+	}
+    
+	/**
+	 * Update.
+	 *
+	 * @param dto the dto
+	 * @return the response
+	 */
+    @PutMapping(value="/{id}")
+	public ResponseEntity<T> update(@PathVariable K id, U dto) {
+		try {
+			T savedObject = service.update(id, dto);
 			
 	        if (savedObject == null)
 	            return ResponseEntity.noContent().build();
@@ -122,7 +150,7 @@ public abstract class AbstractRestController<T extends Persistable<K>, K extends
 	}
     
     @DeleteMapping(value="/{id}")
-    public ResponseEntity<Void> delete(@PathVariable K id) {
+    public ResponseEntity<Void> deleteById(@PathVariable K id) {
     	try {
     		service.deleteById(id);
     		return ResponseEntity.ok().build();

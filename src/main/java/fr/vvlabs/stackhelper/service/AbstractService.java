@@ -35,6 +35,18 @@ public abstract class AbstractService<T extends Persistable<K>, K extends Serial
 	private AbstractMapper<T, K, S, U> mapper;
 
 	// ===========================================================
+	// Methods for/from SuperClass/Interfaces
+	// ===========================================================
+	
+	/**
+	 * Update model.
+	 *
+	 * @param model the model
+	 * @param dto the dto
+	 */
+	protected abstract T updateModel(final T model, final U dto);
+	
+	// ===========================================================
 	// Methods
 	// ===========================================================
 
@@ -75,14 +87,30 @@ public abstract class AbstractService<T extends Persistable<K>, K extends Serial
 	}
 
 	/**
-	 * Save.
+	 * Create.
 	 *
-	 * @param dto the create/update dto
-	 * @return the created/updated model
+	 * @param dto the create dto
+	 * @return the created model
 	 */
 	@Transactional
-	public T save(U dto) {
+	public T create(final U dto) {
 		return dao.save(mapper.mapToModel(dto));
+	}
+	
+	/**
+	 * Update.
+	 *
+	 * @param dto the update dto
+	 * @return the updated model
+	 */
+	@Transactional
+	public T update(final K id, final U dto) {
+		Optional<T> model = dao.findById(id);
+		if (model.isPresent()) {
+			T updatedModel = updateModel(model.get(), dto);
+			return dao.save(updatedModel);
+		}
+		return null;
 	}
 
 	/**
@@ -91,7 +119,7 @@ public abstract class AbstractService<T extends Persistable<K>, K extends Serial
 	 * @param dtoList the create/update dto list
 	 * @return the created/updated models
 	 */
-	public List<T> saveAll(List<U> dtoList) {
+	public List<T> saveAll(final List<U> dtoList) {
 		Iterable<T> models = dao.saveAll(dtoList.stream().map(mapper::mapToModel).collect(Collectors.toList()));
 		return StreamSupport.stream(models.spliterator(), false).collect(Collectors.toList());
 	}
@@ -102,7 +130,7 @@ public abstract class AbstractService<T extends Persistable<K>, K extends Serial
 	 * @param model the model
 	 */
 	@Transactional
-	public void delete(T model) {
+	public void delete(final T model) {
 		dao.delete(model);
 	}
 
@@ -112,7 +140,7 @@ public abstract class AbstractService<T extends Persistable<K>, K extends Serial
 	 * @param id the id
 	 */
 	@Transactional
-	public void deleteById(K id) {
+	public void deleteById(final K id) {
 		dao.deleteById(id);
 	}
 
@@ -122,7 +150,7 @@ public abstract class AbstractService<T extends Persistable<K>, K extends Serial
 	 * @param idList the id list
 	 */
 	@Transactional
-	public void deleteByIdList(List<K> idList) {
+	public void deleteByIdList(final List<K> idList) {
 		idList.forEach(dao::deleteById);
 	}
 }
