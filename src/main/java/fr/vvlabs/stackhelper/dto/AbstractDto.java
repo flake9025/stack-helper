@@ -16,7 +16,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper=false)
 @ToString
 public abstract class AbstractDto<K extends Serializable> implements Serializable {
 	

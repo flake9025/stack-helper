@@ -19,7 +19,7 @@ import lombok.ToString;
  */
 @AllArgsConstructor
 @Data
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper=false)
 @ToString
 public abstract class AbstractModel<K extends Serializable> implements Persistable<K> {
 

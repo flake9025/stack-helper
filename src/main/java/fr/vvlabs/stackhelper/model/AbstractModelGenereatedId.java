@@ -20,7 +20,7 @@ import lombok.ToString;
  */
 @AllArgsConstructor
 @Data
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper=false)
 @ToString
 public abstract class AbstractModelGenereatedId<K extends Serializable> implements Persistable<K> {
 
