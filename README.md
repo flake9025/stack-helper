@@ -5,18 +5,18 @@
 ## Overview
 This is the stack builder helper project, which allows easy implementation of CRUD REST Services.
 Using generics types for required objects :
-	- Entity
-	- Primary Key
-	- DTO used for read operations
-	- DTO used for create operations (can be the same)
+- Entity
+- Primary Key
+- DTO used for read operations
+- DTO used for create operations (can be the same)
 it will produce a Web Controller and a Service Layer, with the following operations :
- 	- create
-	- countAll
-	- findAll
-	- findById
-	- update
-	- deleteById
-	- deleteByIdList
+- create
+- countAll
+- findAll
+- findById
+- update
+- deleteById
+- deleteByIdList
 
 ### Prerequisites
 - Spring 5
