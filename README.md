@@ -56,7 +56,7 @@ for example :
 @Data
 @EqualsAndHashCode(callSuper=true)
 @ToString
-public class ComboDTO extends AbstractDto<Integer> {
+public class PetDTO extends AbstractDto<Integer> {
 
 	private static final long serialVersionUID = -6010374309568122948L;
 
@@ -70,11 +70,13 @@ for example :
 
 ```java
 @Service
-public class ComboService extends AbstractService<Combo, Integer, ComboDTO, ComboDTO> {
+public class PetService extends AbstractService<Pet, Integer, PetDTO, PetDTO> {
 	@Override
-	protected Combo updateModel(final Combo model, final ComboDTO dto) {
-		model.setName(dto.getName());
-		model.setLevel(dto.getLevel());
+	protected Pet updateModel(final Pet model, final PetDTO dto) {
+		// some business logic :
+		if(!dto.getName().isEmpty() {
+			model.setName(dto.getName());
+		}
 		return model;
 	}
 }
@@ -88,6 +90,6 @@ for example :
 @RestController
 @RequestMapping("/pets")
 @Api
-public class PetsController extends AbstractRestController<Pet, Integer, PetReadDTO, PetWriteDTO>{
+public class PetController extends AbstractRestController<Pet, Integer, PetDTO, PetDTO>{
 }
 ```
