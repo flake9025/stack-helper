@@ -2,8 +2,9 @@ package fr.vvlabs.stackhelper.mapper;
 
 import java.io.Serializable;
 
+import org.springframework.data.domain.Persistable;
+
 import fr.vvlabs.stackhelper.dto.AbstractDto;
-import fr.vvlabs.stackhelper.model.AbstractModel;
 
 /**
  * The Interface AbstractMapper.
@@ -15,7 +16,7 @@ import fr.vvlabs.stackhelper.model.AbstractModel;
  * @param <S> the read dto type
  * @param <U> the create / update type
  */
-public interface AbstractMapper<T extends AbstractModel<K>, K extends Serializable, S extends AbstractDto<K>, U extends AbstractDto<K>> {
+public interface AbstractMapper<T extends Persistable<K>, K extends Serializable, S extends AbstractDto<K>, U extends AbstractDto<K>> {
 
 	// ===========================================================
 	// Methods

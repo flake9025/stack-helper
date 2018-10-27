@@ -7,12 +7,12 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Persistable;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import fr.vvlabs.stackhelper.dto.AbstractDto;
 import fr.vvlabs.stackhelper.mapper.AbstractMapper;
-import fr.vvlabs.stackhelper.model.AbstractModel;
 
 /**
  * @author Vincent Villain Abstract Service Layer for CRUD operations
@@ -22,7 +22,7 @@ import fr.vvlabs.stackhelper.model.AbstractModel;
  * @param <S> the Read DTO type
  * @param <U> the Create/Update DTO type
  */
-public abstract class AbstractService<T extends AbstractModel<K>, K extends Serializable, S extends AbstractDto<K>, U extends AbstractDto<K>> {
+public abstract class AbstractService<T extends Persistable<K>, K extends Serializable, S extends AbstractDto<K>, U extends AbstractDto<K>> {
 
 	// ===========================================================
 	// Fields

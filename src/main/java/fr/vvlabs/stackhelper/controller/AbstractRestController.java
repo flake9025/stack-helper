@@ -8,9 +8,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Persistable;
 
 import fr.vvlabs.stackhelper.dto.AbstractDto;
-import fr.vvlabs.stackhelper.model.AbstractModel;
 import fr.vvlabs.stackhelper.service.AbstractService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
  * @param <U> the Create/Update DTO type
  */
 @Slf4j
-public abstract class AbstractRestController<T extends AbstractModel<K>, K extends Serializable, S extends AbstractDto<K>, U extends AbstractDto<K>> {
+public abstract class AbstractRestController<T extends Persistable<K>, K extends Serializable, S extends AbstractDto<K>, U extends AbstractDto<K>> {
 
 	// ===========================================================
 	// Fields

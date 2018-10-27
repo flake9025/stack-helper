@@ -2,6 +2,7 @@ package fr.vvlabs.stackhelper.model;
 
 import java.io.Serializable;
 
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Transient;
 
@@ -13,7 +14,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 /**
- * The abstract Class AbstractModel.
+ * The abstract Class AbstractModelGenereatedId.
  *
  * @param <K> the primary key type
  */
@@ -21,13 +22,14 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode
 @ToString
-public abstract class AbstractModel<K extends Serializable> implements Persistable<K> {
+public abstract class AbstractModelGenereatedId<K extends Serializable> implements Persistable<K> {
 
 	// ===========================================================
 	// Fields
 	// ===========================================================
 
     @Id
+    @GeneratedValue
 	protected K id;
     
     @Transient
@@ -37,7 +39,7 @@ public abstract class AbstractModel<K extends Serializable> implements Persistab
  	// Constructors
  	// ===========================================================
  	
-    protected AbstractModel() {
+    protected AbstractModelGenereatedId() {
     	super();
         this.isNew = true;
     }
