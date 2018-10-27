@@ -2,13 +2,14 @@ package fr.vvlabs.stackhelper.controller;
 
 import java.io.Serializable;
 import java.net.URI;
+import java.util.List;
 
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
-import javax.ws.rs.core.Response;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Persistable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -45,9 +46,9 @@ public abstract class AbstractRestController<T extends Persistable<K>, K extends
 	 * @return the response
 	 */
 	@GetMapping(value="/count")
-	public Response countAll() {
+	public ResponseEntity<Long> countAll() {
 		try {
-			return Response.ok(service.countAll()).build();
+			return ResponseEntity.ok(service.countAll());
 		} catch (Exception e) {
 			log.error("countAll() KO : {}", e.getMessage(), e);
 			throw new InternalServerErrorException(e.getMessage());
@@ -60,9 +61,9 @@ public abstract class AbstractRestController<T extends Persistable<K>, K extends
 	 * @return the response
 	 */
 	@GetMapping
-	public Response findAll() {
+	public ResponseEntity<List<S>> findAll() {
 		try {
-			return Response.ok(service.findAll()).build();
+			return ResponseEntity.ok(service.findAll());
 		} catch (Exception e) {
 			log.error("findAll() KO : {}", e.getMessage(), e);
 			throw new InternalServerErrorException(e.getMessage());
@@ -76,11 +77,11 @@ public abstract class AbstractRestController<T extends Persistable<K>, K extends
 	 * @return the response
 	 */
 	@GetMapping(value="/{id}")
-	public Response findById(K id) {
+	public ResponseEntity<S> findById(K id) {
 		try {
 			S dto = service.findById(id);
 			if (dto != null) {
-				return Response.ok(dto).build();
+				return ResponseEntity.ok(dto);
 			} else {
 				throw new NotFoundException();
 			}
@@ -97,12 +98,12 @@ public abstract class AbstractRestController<T extends Persistable<K>, K extends
 	 * @return the response
 	 */
     @PostMapping
-	public Response save(U dto) {
+	public ResponseEntity<T> save(U dto) {
 		try {
 			T savedObject = service.save(dto);
 			
 	        if (savedObject == null)
-	            return Response.noContent().build();
+	            return ResponseEntity.noContent().build();
 	        
 	        URI location = ServletUriComponentsBuilder
 	                .fromCurrentRequest()
@@ -110,7 +111,7 @@ public abstract class AbstractRestController<T extends Persistable<K>, K extends
 	                .buildAndExpand(savedObject.getId())
 	                .toUri();
 	        
-	        return Response.created(location).build();
+	        return ResponseEntity.created(location).build();
 		} catch (Exception e) {
 			log.error("save({}) KO : {}", dto, e.getMessage(), e);
 			throw new InternalServerErrorException(e.getMessage());
