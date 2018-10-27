@@ -2,7 +2,6 @@ package fr.vvlabs.stackhelper.model;
 
 import java.io.Serializable;
 
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
@@ -58,7 +57,7 @@ public abstract class AbstractModelGenereatedId<K extends Serializable> implemen
 
 	@Override
 	public boolean isNew() {
-		return this.isNew();
+		return this.isNew;
 	}
 	
 	// ===========================================================

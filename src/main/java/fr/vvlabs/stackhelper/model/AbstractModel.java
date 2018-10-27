@@ -55,7 +55,7 @@ public abstract class AbstractModel<K extends Serializable> implements Persistab
 
 	@Override
 	public boolean isNew() {
-		return this.isNew();
+		return this.isNew;
 	}
 	
 	// ===========================================================
