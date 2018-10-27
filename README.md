@@ -9,7 +9,8 @@ Using generics types for required objects :
 - Primary Key
 - DTO used for read operations
 - DTO used for create operations (can be the same)
-it will produce a Web Controller and a Service Layer, with the following operations :
+
+It will produce a Web Controller and a Service Layer, with the following operations :
 - create
 - countAll
 - findAll
