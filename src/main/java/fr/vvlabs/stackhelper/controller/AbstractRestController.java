@@ -10,8 +10,11 @@ import javax.ws.rs.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Persistable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import fr.vvlabs.stackhelper.dto.AbstractDto;
@@ -77,7 +80,7 @@ public abstract class AbstractRestController<T extends Persistable<K>, K extends
 	 * @return the response
 	 */
 	@GetMapping(value="/{id}")
-	public ResponseEntity<S> findById(K id) {
+	public ResponseEntity<S> findById(@PathVariable K id) {
 		try {
 			S dto = service.findById(id);
 			if (dto != null) {
@@ -117,4 +120,26 @@ public abstract class AbstractRestController<T extends Persistable<K>, K extends
 			throw new InternalServerErrorException(e.getMessage());
 		}
 	}
+    
+    @DeleteMapping(value="/{id}")
+    public ResponseEntity<Void> delete(@PathVariable K id) {
+    	try {
+    		service.deleteById(id);
+    		return ResponseEntity.ok().build();
+    	} catch(Exception e) {
+			log.error("delete({}) KO : {}", id, e.getMessage(), e);
+            return ResponseEntity.noContent().build();
+    	}
+    }
+    
+    @DeleteMapping
+    public ResponseEntity<Void> deleteList(@RequestBody List<K> idList) {
+    	try {
+    		service.deleteByIdList(idList);
+    		return ResponseEntity.ok().build();
+    	} catch(Exception e) {
+			log.error("deleteList({}) KO : {}", idList, e.getMessage(), e);
+            return ResponseEntity.noContent().build();
+    	}
+    }
 }
