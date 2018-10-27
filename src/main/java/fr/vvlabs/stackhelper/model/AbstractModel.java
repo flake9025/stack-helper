@@ -3,6 +3,7 @@ package fr.vvlabs.stackhelper.model;
 import java.io.Serializable;
 
 import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
 import org.springframework.data.domain.Persistable;
@@ -17,6 +18,7 @@ import lombok.ToString;
  *
  * @param <K> the primary key type
  */
+@MappedSuperclass
 @AllArgsConstructor
 @Data
 @EqualsAndHashCode(callSuper=false)

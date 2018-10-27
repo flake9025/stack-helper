@@ -1,14 +1,17 @@
 package fr.vvlabs.stackhelper.controller;
 
 import java.io.Serializable;
+import java.net.URI;
 
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Persistable;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import fr.vvlabs.stackhelper.dto.AbstractDto;
 import fr.vvlabs.stackhelper.service.AbstractService;
@@ -41,7 +44,7 @@ public abstract class AbstractRestController<T extends Persistable<K>, K extends
 	 *
 	 * @return the response
 	 */
-	// @GetMapping(value="/thisfuckingclassname!!!!/count")
+	@GetMapping(value="/count")
 	public Response countAll() {
 		try {
 			return Response.ok(service.countAll()).build();
@@ -56,7 +59,7 @@ public abstract class AbstractRestController<T extends Persistable<K>, K extends
 	 *
 	 * @return the response
 	 */
-	// @GetMapping(value="/thisfuckingclassname!!!!/")
+	@GetMapping
 	public Response findAll() {
 		try {
 			return Response.ok(service.findAll()).build();
@@ -72,7 +75,7 @@ public abstract class AbstractRestController<T extends Persistable<K>, K extends
 	 * @param id the id
 	 * @return the response
 	 */
-	// @GetMapping(value="/thisfuckingclassname!!!!/{id}")
+	@GetMapping(value="/{id}")
 	public Response findById(K id) {
 		try {
 			S dto = service.findById(id);
@@ -93,11 +96,21 @@ public abstract class AbstractRestController<T extends Persistable<K>, K extends
 	 * @param dto the dto
 	 * @return the response
 	 */
+    @PostMapping
 	public Response save(U dto) {
 		try {
-			service.save(dto);
-			return Response.status(Status.CREATED).build();
-			// TODO what about location ?
+			T savedObject = service.save(dto);
+			
+	        if (savedObject == null)
+	            return Response.noContent().build();
+	        
+	        URI location = ServletUriComponentsBuilder
+	                .fromCurrentRequest()
+	                .path("/{id}")
+	                .buildAndExpand(savedObject.getId())
+	                .toUri();
+	        
+	        return Response.created(location).build();
 		} catch (Exception e) {
 			log.error("save({}) KO : {}", dto, e.getMessage(), e);
 			throw new InternalServerErrorException(e.getMessage());
