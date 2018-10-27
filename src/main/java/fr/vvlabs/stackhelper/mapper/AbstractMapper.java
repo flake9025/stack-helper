@@ -1,15 +1,26 @@
 package fr.vvlabs.stackhelper.mapper;
 
+import java.io.Serializable;
+
+import fr.vvlabs.stackhelper.dto.AbstractDto;
+import fr.vvlabs.stackhelper.model.AbstractModel;
+
 /**
+ * The Interface AbstractMapper.
+ *
  * @author Vincent Villain
  * Abstract Mapper for converting Model / Read DTO / Write DTO.
- *
  * @param <T> the model type
+ * @param <K> the primary key type
  * @param <S> the read dto type
  * @param <U> the create / update type
  */
-public interface AbstractMapper<T, S, U> {
+public interface AbstractMapper<T extends AbstractModel<K>, K extends Serializable, S extends AbstractDto<K>, U extends AbstractDto<K>> {
 
+	// ===========================================================
+	// Methods
+	// ===========================================================
+	
 	/**
 	 * Convert model to read dto.
 	 *

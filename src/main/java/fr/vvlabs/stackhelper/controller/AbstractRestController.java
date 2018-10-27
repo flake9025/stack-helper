@@ -1,5 +1,7 @@
 package fr.vvlabs.stackhelper.controller;
 
+import java.io.Serializable;
+
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
@@ -7,6 +9,8 @@ import javax.ws.rs.core.Response.Status;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import fr.vvlabs.stackhelper.dto.AbstractDto;
+import fr.vvlabs.stackhelper.model.AbstractModel;
 import fr.vvlabs.stackhelper.service.AbstractService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,25 +23,25 @@ import lombok.extern.slf4j.Slf4j;
  * @param <U> the Create/Update DTO type
  */
 @Slf4j
-public abstract class AbstractRestController<T, K, S, U> {
-	
+public abstract class AbstractRestController<T extends AbstractModel<K>, K extends Serializable, S extends AbstractDto<K>, U extends AbstractDto<K>> {
+
 	// ===========================================================
 	// Fields
 	// ===========================================================
 
 	@Autowired
 	private AbstractService<T, K, S, U> service;
-	
+
 	// ===========================================================
 	// Methods
 	// ===========================================================
-	
+
 	/**
 	 * Count all.
 	 *
 	 * @return the response
 	 */
-	//    @GetMapping(value="/thisfuckingclassname!!!!/count")	
+	// @GetMapping(value="/thisfuckingclassname!!!!/count")
 	public Response countAll() {
 		try {
 			return Response.ok(service.countAll()).build();
@@ -46,13 +50,13 @@ public abstract class AbstractRestController<T, K, S, U> {
 			throw new InternalServerErrorException(e.getMessage());
 		}
 	}
-	
+
 	/**
 	 * Find all.
 	 *
 	 * @return the response
 	 */
-	//    @GetMapping(value="/thisfuckingclassname!!!!/")	
+	// @GetMapping(value="/thisfuckingclassname!!!!/")
 	public Response findAll() {
 		try {
 			return Response.ok(service.findAll()).build();
@@ -61,18 +65,18 @@ public abstract class AbstractRestController<T, K, S, U> {
 			throw new InternalServerErrorException(e.getMessage());
 		}
 	}
-	
+
 	/**
 	 * Find by id.
 	 *
 	 * @param id the id
 	 * @return the response
 	 */
-	//    @GetMapping(value="/thisfuckingclassname!!!!/{id}")	
+	// @GetMapping(value="/thisfuckingclassname!!!!/{id}")
 	public Response findById(K id) {
 		try {
 			S dto = service.findById(id);
-			if(dto != null) {
+			if (dto != null) {
 				return Response.ok(dto).build();
 			} else {
 				throw new NotFoundException();
@@ -82,7 +86,7 @@ public abstract class AbstractRestController<T, K, S, U> {
 			throw new InternalServerErrorException(e.getMessage());
 		}
 	}
-	
+
 	/**
 	 * Save.
 	 *
@@ -93,7 +97,7 @@ public abstract class AbstractRestController<T, K, S, U> {
 		try {
 			service.save(dto);
 			return Response.status(Status.CREATED).build();
-			//TODO what about location ?
+			// TODO what about location ?
 		} catch (Exception e) {
 			log.error("save({}) KO : {}", dto, e.getMessage(), e);
 			throw new InternalServerErrorException(e.getMessage());

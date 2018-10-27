@@ -1,5 +1,6 @@
 package fr.vvlabs.stackhelper.service;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -9,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import fr.vvlabs.stackhelper.dto.AbstractDto;
 import fr.vvlabs.stackhelper.mapper.AbstractMapper;
+import fr.vvlabs.stackhelper.model.AbstractModel;
 
 /**
  * @author Vincent Villain Abstract Service Layer for CRUD operations
@@ -19,7 +22,7 @@ import fr.vvlabs.stackhelper.mapper.AbstractMapper;
  * @param <S> the Read DTO type
  * @param <U> the Create/Update DTO type
  */
-public abstract class AbstractService<T, K, S, U> {
+public abstract class AbstractService<T extends AbstractModel<K>, K extends Serializable, S extends AbstractDto<K>, U extends AbstractDto<K>> {
 
 	// ===========================================================
 	// Fields
@@ -29,7 +32,7 @@ public abstract class AbstractService<T, K, S, U> {
 	private CrudRepository<T, K> dao;
 
 	@Autowired
-	private AbstractMapper<T, S, U> mapper;
+	private AbstractMapper<T, K, S, U> mapper;
 
 	// ===========================================================
 	// Methods
