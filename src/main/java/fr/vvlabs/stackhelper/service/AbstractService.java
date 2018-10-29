@@ -1,6 +1,7 @@
 package fr.vvlabs.stackhelper.service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -10,9 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import fr.vvlabs.stackhelper.dto.AbstractDto;
 import fr.vvlabs.stackhelper.mapper.AbstractMapper;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Vincent Villain Abstract Service Layer for CRUD operations
@@ -22,6 +25,7 @@ import fr.vvlabs.stackhelper.mapper.AbstractMapper;
  * @param <S> the Read DTO type
  * @param <U> the Create/Update DTO type
  */
+@Slf4j
 public abstract class AbstractService<T extends Persistable<K>, K extends Serializable, S extends AbstractDto<K>, U extends AbstractDto<K>> {
 
 	// ===========================================================
@@ -82,48 +86,117 @@ public abstract class AbstractService<T extends Persistable<K>, K extends Serial
 		Optional<T> model = dao.findById(id);
 		if (model.isPresent()) {
 			dto = mapper.mapToDto(model.get());
+		} else {
+			log.error("findById({}) : object not found", id); 
 		}
 		return dto;
+	}
+	
+	/**
+	 * Exists by id.
+	 *
+	 * @param id the id
+	 * @return true, if successful
+	 */
+	@Transactional(readOnly = true)
+	public boolean existsById(K id) {
+		return dao.existsById(id);
 	}
 
 	/**
 	 * Create.
 	 *
 	 * @param dto the create dto
-	 * @return the created model
+	 * @return the created model key
 	 */
 	@Transactional
-	public T create(final U dto) {
-		return dao.save(mapper.mapToModel(dto));
+	public K create(final U dto) {
+		K key = null;
+		T model = dao.save(mapper.mapToModel(dto));
+		if(model != null) {
+			key = model.getId();
+		} else {
+			log.error("create() : object not saved : {}", dto); 
+		}
+		return key;
+	}
+	
+	/**
+	 * Create all.
+	 *
+	 * @param dtoList the create dto list
+	 * @return the created model keys
+	 */
+	public List<K> createAll(final List<U> dtoList) {
+		List<K> keyList = null;
+		Iterable<T> modelIterable = dao.saveAll(dtoList.stream().map(mapper::mapToModel).collect(Collectors.toList()));
+		if(modelIterable != null) {
+			List<T> modelList = StreamSupport.stream(modelIterable.spliterator(), false).collect(Collectors.toList());
+			if(!CollectionUtils.isEmpty(modelList)) {
+				keyList = modelList.stream().map(T::getId).collect(Collectors.toList());
+			}
+		} else {
+			log.error("createAll() : objects not saved {}", dtoList); 
+		}
+		return keyList;
 	}
 	
 	/**
 	 * Update.
 	 *
 	 * @param dto the update dto
-	 * @return the updated model
+	 * @return the updated key
 	 */
 	@Transactional
-	public T update(final K id, final U dto) {
+	public K update(final K id, final U dto) {
+		K key = null;
 		Optional<T> model = dao.findById(id);
 		if (model.isPresent()) {
 			T updatedModel = updateModel(model.get(), dto);
-			return dao.save(updatedModel);
+			key = dao.save(updatedModel).getId();
+		} else {
+			log.error("update({}) : object not found", id); 
 		}
-		return null;
+		return key;
 	}
 
 	/**
-	 * Save all.
+	 * Update all.
 	 *
 	 * @param dtoList the create/update dto list
 	 * @return the created/updated models
 	 */
-	public List<T> saveAll(final List<U> dtoList) {
-		Iterable<T> models = dao.saveAll(dtoList.stream().map(mapper::mapToModel).collect(Collectors.toList()));
-		return StreamSupport.stream(models.spliterator(), false).collect(Collectors.toList());
+	public List<K> updateAll(final List<U> dtoList) {
+		List<K> keyList = null;
+		// update models from dto
+		List<T> updatedModelList = new ArrayList<>();
+		for(U dto : dtoList) {
+			Optional<T> model = dao.findById(dto.getId());
+			if (model.isPresent()) {
+				updatedModelList.add(updateModel(model.get(), dto));
+			} else {
+				log.error("updateAll({}) : object not found", dto.getId()); 
+			}
+		}
+		// save new models
+		Iterable<T> modelIterable = dao.saveAll(updatedModelList);
+		if(modelIterable != null) {
+			List<T> modelList = StreamSupport.stream(modelIterable.spliterator(), false).collect(Collectors.toList());
+			if(!CollectionUtils.isEmpty(modelList)) {
+				keyList = modelList.stream().map(T::getId).collect(Collectors.toList());
+			}
+		}
+		return keyList;
 	}
 
+	/**
+	 * Delete all.
+	 */
+	@Transactional
+	public void deleteAll() {
+		dao.deleteAll();
+	}
+	
 	/**
 	 * Delete.
 	 *
@@ -152,5 +225,15 @@ public abstract class AbstractService<T extends Persistable<K>, K extends Serial
 	@Transactional
 	public void deleteByIdList(final List<K> idList) {
 		idList.forEach(dao::deleteById);
+	}
+	
+	/**
+	 * Delete all.
+	 *
+	 * @param modelList the model list
+	 */
+	@Transactional
+	public void deleteAll(List<T> modelList) {
+		dao.deleteAll(modelList);
 	}
 }

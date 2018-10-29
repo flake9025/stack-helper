@@ -10,6 +10,7 @@ import javax.ws.rs.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Persistable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,7 +48,7 @@ public abstract class AbstractRestController<T extends Persistable<K>, K extends
 	/**
 	 * Count all.
 	 *
-	 * @return the response
+	 * @return the object count
 	 */
 	@GetMapping(value="/count")
 	public ResponseEntity<Long> countAll() {
@@ -62,7 +63,7 @@ public abstract class AbstractRestController<T extends Persistable<K>, K extends
 	/**
 	 * Find all.
 	 *
-	 * @return the response
+	 * @return the object list
 	 */
 	@GetMapping
 	public ResponseEntity<List<S>> findAll() {
@@ -78,7 +79,7 @@ public abstract class AbstractRestController<T extends Persistable<K>, K extends
 	 * Find by id.
 	 *
 	 * @param id the id
-	 * @return the response
+	 * @return the object
 	 */
 	@GetMapping(value="/{id}")
 	public ResponseEntity<S> findById(@PathVariable K id) {
@@ -99,20 +100,68 @@ public abstract class AbstractRestController<T extends Persistable<K>, K extends
 	 * Create.
 	 *
 	 * @param dto the dto
-	 * @return the response
+	 * @return the key
 	 */
     @PostMapping
-	public ResponseEntity<T> create(U dto) {
+	public ResponseEntity<K> create(U dto) {
 		try {
-			T savedObject = service.create(dto);
+			K newKey = service.create(dto);
 			
-	        if (savedObject == null)
+	        if (newKey == null)
 	            return ResponseEntity.noContent().build();
 	        
 	        URI location = ServletUriComponentsBuilder
 	                .fromCurrentRequest()
 	                .path("/{id}")
-	                .buildAndExpand(savedObject.getId())
+	                .buildAndExpand(newKey)
+	                .toUri();
+	        
+	        return ResponseEntity.created(location).build();
+		} catch (Exception e) {
+			log.error("create({}) KO : {}", dto, e.getMessage(), e);
+			throw new InternalServerErrorException(e.getMessage());
+		}
+	}
+    
+	/**
+	 * Create list.
+	 *
+	 * @param dto the dto
+	 * @return the key list
+	 */
+    @PostMapping(value="/createAll")
+	public ResponseEntity<List<K>> createAll(List<U> dtoList) {
+		try {
+			List<K> newKeyList = service.createAll(dtoList);
+			
+	        if (CollectionUtils.isEmpty(newKeyList))
+	            return ResponseEntity.noContent().build();
+	        
+	        return ResponseEntity.ok(newKeyList);
+		} catch (Exception e) {
+			log.error("createAll({}) KO : {}", dtoList, e.getMessage(), e);
+			throw new InternalServerErrorException(e.getMessage());
+		}
+	}
+    
+	/**
+	 * Update.
+	 *
+	 * @param dto the dto
+	 * @return the key
+	 */
+    @PutMapping(value="/{id}")
+	public ResponseEntity<K> update(@PathVariable K id, U dto) {
+		try {
+			K savedKey = service.update(id, dto);
+			
+	        if (savedKey == null)
+	            return ResponseEntity.noContent().build();
+	        
+	        URI location = ServletUriComponentsBuilder
+	                .fromCurrentRequest()
+	                .path("/{id}")
+	                .buildAndExpand(savedKey)
 	                .toUri();
 	        
 	        return ResponseEntity.created(location).build();
@@ -123,32 +172,32 @@ public abstract class AbstractRestController<T extends Persistable<K>, K extends
 	}
     
 	/**
-	 * Update.
+	 * Update list.
 	 *
 	 * @param dto the dto
-	 * @return the response
+	 * @return the key list
 	 */
-    @PutMapping(value="/{id}")
-	public ResponseEntity<T> update(@PathVariable K id, U dto) {
+    @PutMapping(value="/updateAll")
+	public ResponseEntity<List<K>> updateAll(List<U> dtoList) {
 		try {
-			T savedObject = service.update(id, dto);
+			List<K> keyList = service.updateAll(dtoList);
 			
-	        if (savedObject == null)
+	        if (CollectionUtils.isEmpty(keyList))
 	            return ResponseEntity.noContent().build();
 	        
-	        URI location = ServletUriComponentsBuilder
-	                .fromCurrentRequest()
-	                .path("/{id}")
-	                .buildAndExpand(savedObject.getId())
-	                .toUri();
-	        
-	        return ResponseEntity.created(location).build();
+	        return ResponseEntity.ok(keyList);
 		} catch (Exception e) {
-			log.error("save({}) KO : {}", dto, e.getMessage(), e);
+			log.error("updateAll({}) KO : {}", dtoList, e.getMessage(), e);
 			throw new InternalServerErrorException(e.getMessage());
 		}
 	}
     
+    /**
+     * Delete by id.
+     *
+     * @param id the id
+     * @return the response entity
+     */
     @DeleteMapping(value="/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable K id) {
     	try {
@@ -160,8 +209,14 @@ public abstract class AbstractRestController<T extends Persistable<K>, K extends
     	}
     }
     
-    @DeleteMapping
-    public ResponseEntity<Void> deleteList(@RequestBody List<K> idList) {
+    /**
+     * Delete list.
+     *
+     * @param idList the id list
+     * @return the response entity
+     */
+    @DeleteMapping(value="/deleteAll")
+    public ResponseEntity<Void> deleteAll(@RequestBody List<K> idList) {
     	try {
     		service.deleteByIdList(idList);
     		return ResponseEntity.ok().build();
