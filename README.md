@@ -12,13 +12,15 @@ Using generics types for required objects :
 
 It will produce a Web Controller and a Service Layer, with the following operations :
 - create
-- countAll
-- findAll
-- findById
+- create list
+- count all
+- find all
+- find by ID
 - update
-- updateList
-- deleteById
-- deleteByIdList
+- update list
+- delete all
+- delete 
+- delete list
 
 ### Prerequisites
 - Spring MVC (for REST Controllers)
