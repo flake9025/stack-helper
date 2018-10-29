@@ -46,9 +46,8 @@ for example :
 @EqualsAndHashCode(callSuper = true)
 @ToString
 public class Pet extends AbstractModelGenereatedId<Integer>{
-
     private String name;
-    
+    private List<Pet> friends;
 }
 ```
 
@@ -57,6 +56,8 @@ All you have to do is to extend the Abstract Dto class.
 You can choose to use the same DTO for both Read and Write operations, or use a different one for each.
 for example :
 
+Here we have a PetDTO with full data for readings :
+
 ```java
 @NoArgsConstructor
 @AllArgsConstructor
@@ -64,10 +65,21 @@ for example :
 @EqualsAndHashCode(callSuper=true)
 @ToString
 public class PetDTO extends AbstractDto<Integer> {
-
-	private static final long serialVersionUID = -6010374309568122948L;
-
 	private String name;
+	private List<PetDTO> friends;
+}
+```
+And a PetWriteDTO with less data, for create and update operations :
+
+```java
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+@EqualsAndHashCode(callSuper=true)
+@ToString
+public class PetWriteDTO extends AbstractDto<Integer> {
+	private String name;
+	private List<Long> friendsIds;
 }
 ```
 
@@ -78,20 +90,20 @@ for example :
 
 ```java
 @Mapper(componentModel="spring")
-public interface PetMapper extends AbstractMapper<Pet, Integer, PetDTO, PetDTO> {
+public interface PetMapper extends AbstractMapper<Pet, Integer, PetDTO, PetWriteDTO> {
 
 	@Override
 	public PetDTO PetDTO(Pet model);
 
 	@Override
-	public Pet mapToModel(PetDTO writeDto);
+	public Pet mapToModel(PetWriteDTO writeDto);
 }
 ```
 
 If you don't want to use MapStruct, you can still write your own mapper class :
 
 ```java
-public class PetMapperImpl extends AbstractMapper<Pet, Integer, PetDTO, PetDTO> {
+public class PetMapperImpl extends AbstractMapper<Pet, Integer, PetDTO, PetWriteDTO> {
 
 	@Override
 	public PetDTO PetDTO(Pet model){
@@ -101,7 +113,7 @@ public class PetMapperImpl extends AbstractMapper<Pet, Integer, PetDTO, PetDTO> 
 	}
 
 	@Override
-	public Pet mapToModel(PetDTO writeDto){
+	public Pet mapToModel(PetWriteDTO writeDto){
 		Pet model = new Pet();
 		model.setName(dto.getName());
 		return model;
@@ -114,12 +126,24 @@ for example :
 
 ```java
 @Service
-public class PetService extends AbstractService<Pet, Integer, PetDTO, PetDTO> {
+public class PetService extends AbstractService<Pet, Integer, PetDTO, PetWriteDTO> {
+
+	@Autowired
+	private PetDao petDao;
+	
 	@Override
-	protected Pet updateModel(final Pet model, final PetDTO dto) {
-		// some business logic :
-		if(!dto.getName().isEmpty() {
-			model.setName(dto.getName());
+	protected Pet updateModel(final Pet model, final PetWriteDTO dto) {
+		// check name
+		if(dto.getName().isEmpty()) {
+			if(petDao.findByName(dto.getName()) == null){
+				model.setName(dto.getName());
+			}
+		}
+		// check friends
+		for(Integer friendId : dto.getFriendsIds()){
+			if(petDao.existsById(friendId)){
+				model.getFriends().add(petDao.findById(friendId));
+			}
 		}
 		return model;
 	}
@@ -134,7 +158,7 @@ for example :
 @RestController
 @RequestMapping("/pets")
 @Api
-public class PetController extends AbstractRestController<Pet, Integer, PetDTO, PetDTO> {
+public class PetController extends AbstractRestController<Pet, Integer, PetDTO, PetWriteDTO> {
 	// crud endpoints are already defined !
 	// add only new services
 }
