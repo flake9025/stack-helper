@@ -105,11 +105,14 @@ If you don't want to use MapStruct, you can still write your own mapper class :
 ```java
 public class PetMapperImpl extends AbstractMapper<Pet, Integer, PetDTO, PetWriteDTO> {
 
+	@Autowired
+	private PetDao petDao;
+	
 	@Override
 	public PetDTO mapToDto(Pet model){
 		PetDTO dto = new PetDTO();
 		dto.setName(model.getName());
-		List<Pet> friends = new ArrayList<Pet>());
+		List<PetDTO> friends = new ArrayList<PetDTO>());
 		for(Pet pet : model.getFriends()){
 			friends.add(mapToDto(pet));
 		}
@@ -121,6 +124,11 @@ public class PetMapperImpl extends AbstractMapper<Pet, Integer, PetDTO, PetWrite
 	public Pet mapToModel(PetWriteDTO writeDto){
 		Pet model = new Pet();
 		model.setName(dto.getName());
+		List<Pet> friends = new ArrayList<Pet>());
+		for(Integer friendId : model.getFriendsIds()){
+			friends.add(petDao.findById(friendId));
+		}
+		dto.setFriends(friends);
 		return model;
 	}
 ```
