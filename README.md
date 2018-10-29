@@ -93,7 +93,7 @@ for example :
 public interface PetMapper extends AbstractMapper<Pet, Integer, PetDTO, PetWriteDTO> {
 
 	@Override
-	public PetDTO PetDTO(Pet model);
+	public PetDTO mapToDto(Pet model);
 
 	@Override
 	public Pet mapToModel(PetWriteDTO writeDto);
@@ -106,9 +106,14 @@ If you don't want to use MapStruct, you can still write your own mapper class :
 public class PetMapperImpl extends AbstractMapper<Pet, Integer, PetDTO, PetWriteDTO> {
 
 	@Override
-	public PetDTO PetDTO(Pet model){
+	public PetDTO mapToDto(Pet model){
 		PetDTO dto = new PetDTO();
 		dto.setName(model.getName());
+		List<Pet> friends = new ArrayList<Pet>());
+		for(Pet pet : model.getFriends()){
+			friends.add(mapToDto(pet));
+		}
+		dto.setFriends(friends);
 		return dto;
 	}
 
@@ -135,12 +140,14 @@ public class PetService extends AbstractService<Pet, Integer, PetDTO, PetWriteDT
 	protected Pet updateModel(final Pet model, final PetWriteDTO dto) {
 		// check name
 		if(dto.getName().isEmpty()) {
+			// pet name should be unique !
 			if(petDao.findByName(dto.getName()) == null){
 				model.setName(dto.getName());
 			}
 		}
 		// check friends
 		for(Integer friendId : dto.getFriendsIds()){
+			// pet friend should exists !
 			if(petDao.existsById(friendId)){
 				model.getFriends().add(petDao.findById(friendId));
 			}
