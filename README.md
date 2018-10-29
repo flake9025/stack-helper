@@ -5,10 +5,10 @@
 ## Overview
 This is the stack builder helper project, which allows easy implementation of CRUD REST Services.
 Using generics types for required objects :
-- Entity
-- Primary Key
-- DTO used for read operations
-- DTO used for create operations (can be the same)
+- Entity (Ex: Pet)
+- Primary Key type (ex: Integer, Long, String, etc)
+- DTO used for read operations (ex: findAll, etc)
+- DTO used for create/update operations (ex: create, update) can be the same as the DTO used for read operations)
 
 It will produce a Web Controller and a Service Layer, with the following operations :
 - create
@@ -16,6 +16,7 @@ It will produce a Web Controller and a Service Layer, with the following operati
 - findAll
 - findById
 - update
+- updateList
 - deleteById
 - deleteByIdList
 
@@ -70,7 +71,7 @@ public class PetDTO extends AbstractDto<Integer> {
 
 ### Mappers
 You will need mappers to walk from an Entity to a DTO, and vice versa.
-All you have to do is to create an interface and extend the abstract Mapper class
+Il you are familiar with MapStruct, all you have to do is to create an interface and extend the abstract Mapper class
 for example :
 
 ```java
@@ -83,6 +84,26 @@ public interface PetMapper extends AbstractMapper<Pet, Integer, PetDTO, PetDTO> 
 	@Override
 	public Pet mapToModel(PetDTO writeDto);
 }
+```
+
+If you don't want to use MapStruct, you can still write your own mapper class :
+
+```java
+public class PetMapperImpl extends AbstractMapper<Pet, Integer, PetDTO, PetDTO> {
+
+	@Override
+	public PetDTO PetDTO(Pet model){
+		PetDTO dto = new PetDTO();
+		dto.setName(model.getName());
+		return dto;
+	}
+
+	@Override
+	public Pet mapToModel(PetDTO writeDto){
+		Pet model = new Pet();
+		model.setName(dto.getName());
+		return model;
+	}
 ```
 
 ### Service Layer
