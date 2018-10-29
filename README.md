@@ -16,10 +16,10 @@ It will produce a Web Controller and a Service Layer, with the following operati
 - count all
 - find all
 - find by ID
-- update
+- update by ID
 - update list
 - delete all
-- delete 
+- delete by ID
 - delete list
 
 ### Prerequisites
