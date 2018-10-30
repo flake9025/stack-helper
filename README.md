@@ -3,12 +3,13 @@
 - Master (1.0.0)
 
 ## Overview
-This is the stack builder helper project, which allows easy implementation of CRUD REST Services.
-Using generics types for required objects :
+This project is a stack builder helper, which allows easy implementation of CRUD REST Services with customization, keeping focus on business logic instead of repetitive code.
+It uses generics types for business objects :
 - Entity (Ex: Pet)
 - Primary Key type (ex: Integer, Long, String, etc)
-- DTO used for read operations (ex: findAll, etc)
-- DTO used for create/update operations (ex: create, update) can be the same as the DTO used for read operations)
+- a "Read" DTO used for read operations (ex: findAll, etc)
+- a "Write" DTO used for create/update operations (ex: create, update).
+  Itcan be the same as the "Read" DTO.
 
 It will produce a Web Controller and a Service Layer, with the following operations :
 - create
@@ -100,10 +101,6 @@ If you don't want to use MapStruct, you can still write your own mapper class :
 
 ```java
 public class PetMapperImpl extends AbstractMapper<Pet, Integer, PetDTO> {
-
-	@Autowired
-	private PetDao petDao;
-	
 	@Override
 	public PetDTO mapToDto(Pet model){
 		PetDTO dto = new PetDTO();
@@ -115,6 +112,7 @@ public class PetMapperImpl extends AbstractMapper<Pet, Integer, PetDTO> {
 		dto.setFriends(friends);
 		return dto;
 	}
+}
 ```
 
 ### Service Layer
