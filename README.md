@@ -148,7 +148,7 @@ public class PetService extends AbstractService<Pet, Integer, PetDTO, PetWriteDT
 	private PetDao petDao;
 	
 	@Override
-	protected Pet updateModel(final Pet model, final PetWriteDTO dto) {
+	protected void updateModel(final Pet model, final PetWriteDTO dto) {
 		// check name
 		if(dto.getName().isEmpty()) {
 			// pet name should be unique !
@@ -157,13 +157,14 @@ public class PetService extends AbstractService<Pet, Integer, PetDTO, PetWriteDT
 			}
 		}
 		// check friends
-		for(Integer friendId : dto.getFriendsIds()){
-			// pet friend should exists !
-			if(petDao.existsById(friendId)){
-				model.getFriends().add(petDao.findById(friendId).get());
+		if(!CollectionUtils.isEmpty(dto.getFriendsIds())) {
+			for(Integer friendId : dto.getFriendsIds()){
+				// pet friend should exists !
+				if(petDao.existsById(friendId)){
+					model.getFriends().add(petDao.findById(friendId).get());
+				}
 			}
 		}
-		return model;
 	}
 }
 ```
