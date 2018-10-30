@@ -125,6 +125,7 @@ public class PetMapperImpl implements AbstractMapper<Pet, Integer, PetDTO> {
 	@Override
 	public PetDTO mapToDto(Pet model){
 		PetDTO dto = new PetDTO();
+		dto.setId(model.getId());
 		dto.setName(model.getName());
 		List<PetDTO> friends = new ArrayList<PetDTO>();
 		for(Pet pet : model.getFriends()){
