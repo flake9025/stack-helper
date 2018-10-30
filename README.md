@@ -52,6 +52,16 @@ public class Pet extends AbstractModelGenereatedId<Integer>{
 }
 ```
 
+### Dao Layer
+All you have to do is to implement CrudRepository<Type, Primary Key> from Spring Data.
+for example :
+
+```java
+@Repository
+public interface PetDao extends CrudRepository<Pet, Integer> {
+}
+```
+
 ### DTO
 All you have to do is to extend the Abstract Dto class.
 You can choose to use the same DTO for both Read and Write operations, or use a different one for each.
@@ -100,12 +110,12 @@ public interface PetMapper extends AbstractMapper<Pet, Integer, PetDTO> {
 If you don't want to use MapStruct, you can still write your own mapper class :
 
 ```java
-public class PetMapperImpl extends AbstractMapper<Pet, Integer, PetDTO> {
+public class PetMapperImpl implements AbstractMapper<Pet, Integer, PetDTO> {
 	@Override
 	public PetDTO mapToDto(Pet model){
 		PetDTO dto = new PetDTO();
 		dto.setName(model.getName());
-		List<PetDTO> friends = new ArrayList<PetDTO>());
+		List<PetDTO> friends = new ArrayList<PetDTO>();
 		for(Pet pet : model.getFriends()){
 			friends.add(mapToDto(pet));
 		}
