@@ -54,6 +54,7 @@ for example :
 @ToString
 public class Pet extends AbstractModelGenereatedId<Integer>{
 	private String name;
+	
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "pet_friends", joinColumns = @JoinColumn(name = "pet_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "friend_id", referencedColumnName = "id"))
 	private List<Pet> friends;
