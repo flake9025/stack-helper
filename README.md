@@ -150,6 +150,10 @@ public class PetService extends AbstractService<Pet, Integer, PetDTO, PetWriteDT
 	
 	@Override
 	protected void updateModel(Pet model, PetWriteDTO dto) {
+		// update id ?
+		if(dto.getId() != null) {
+			model.setId(dto.getId());
+		}
 		// check name, should be unique !
 		if(!dto.getName().isEmpty() && petDao.findByName(dto.getName()) == null) {
 			model.setName(dto.getName());
