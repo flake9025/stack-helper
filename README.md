@@ -34,8 +34,8 @@ It will produce a Web Controller and a Service Layer, with the following operati
 If you already have Spring Data Persistable entities, this is already fine.
 Otherwise, you can choose to add "implements Persistable<K>" where K is your primary key type.
 Or, you can choose to extend any helper of this project :
-	- AbstractModel class : generic entity
-	- AbstractModelGeneratedId class  : generic entity with generated Id
+- AbstractModel class : generic entity
+- AbstractModelGeneratedId class  : generic entity with generated Id
 	
 for example :
 
