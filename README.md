@@ -23,7 +23,7 @@ It will produce a Web Controller and a Service Layer, with the following operati
 - delete by ID
 - delete list
 
-### Prerequisites
+## Prerequisites
 - JDK 8
 - Maven
 - Spring MVC (for REST Controllers)
