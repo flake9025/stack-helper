@@ -103,7 +103,7 @@ public abstract class AbstractRestController<T extends Persistable<K>, K extends
 	 * @return the key
 	 */
     @PostMapping
-	public ResponseEntity<K> create(U dto) {
+	public ResponseEntity<K> create(@RequestBody U dto) {
 		try {
 			K newKey = service.create(dto);
 			
@@ -130,7 +130,7 @@ public abstract class AbstractRestController<T extends Persistable<K>, K extends
 	 * @return the key list
 	 */
     @PostMapping(value="/createAll")
-	public ResponseEntity<List<K>> createAll(List<U> dtoList) {
+	public ResponseEntity<List<K>> createAll(@RequestBody List<U> dtoList) {
 		try {
 			List<K> newKeyList = service.createAll(dtoList);
 			
@@ -151,7 +151,7 @@ public abstract class AbstractRestController<T extends Persistable<K>, K extends
 	 * @return the key
 	 */
     @PutMapping(value="/{id}")
-	public ResponseEntity<K> update(@PathVariable K id, U dto) {
+	public ResponseEntity<K> update(@PathVariable K id, @RequestBody U dto) {
 		try {
 			K savedKey = service.update(id, dto);
 			
@@ -178,7 +178,7 @@ public abstract class AbstractRestController<T extends Persistable<K>, K extends
 	 * @return the key list
 	 */
     @PutMapping(value="/updateAll")
-	public ResponseEntity<List<K>> updateAll(List<U> dtoList) {
+	public ResponseEntity<List<K>> updateAll(@RequestBody List<U> dtoList) {
 		try {
 			List<K> keyList = service.updateAll(dtoList);
 			
