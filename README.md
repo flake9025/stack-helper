@@ -30,6 +30,10 @@ It will produce a Web Controller and a Service Layer, with the following operati
 
 ## Getting Started
 
+### Demo
+See the demo project with Pets and embedded H2 database :
+https://github.com/flake9025/stack-helper-demo
+
 ### Entities
 If you already have Spring Data Persistable entities, this is already fine.
 Otherwise, you can choose to add "implements Persistable<K>" where K is your primary key type.
