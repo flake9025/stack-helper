@@ -77,7 +77,7 @@ public abstract class AbstractService<T extends Persistable<K>, K extends Serial
 	 * @param model the model
 	 * @param dto the dto
 	 */
-	protected abstract T updateModel(final T model, final U dto);
+	protected abstract void updateModel(T model, U dto);
 	
 	// ===========================================================
 	// Methods
@@ -179,10 +179,11 @@ public abstract class AbstractService<T extends Persistable<K>, K extends Serial
 	@Transactional
 	public K update(final K id, final U dto) {
 		K key = null;
-		Optional<T> model = dao.findById(id);
-		if (model.isPresent()) {
-			T updatedModel = updateModel(model.get(), dto);
-			key = dao.save(updatedModel).getId();
+		Optional<T> optionalModel = dao.findById(id);
+		if (optionalModel.isPresent()) {
+			T model = optionalModel.get();
+			updateModel(model, dto);
+			key = dao.save(model).getId();
 		} else {
 			log.error("update({}) : object not found", id); 
 		}
@@ -200,9 +201,11 @@ public abstract class AbstractService<T extends Persistable<K>, K extends Serial
 		// update models from dto
 		List<T> updatedModelList = new ArrayList<>();
 		for(U dto : dtoList) {
-			Optional<T> model = dao.findById(dto.getId());
-			if (model.isPresent()) {
-				updatedModelList.add(updateModel(model.get(), dto));
+			Optional<T> optionalModel = dao.findById(dto.getId());
+			if (optionalModel.isPresent()) {
+				T model = optionalModel.get();
+				updateModel(model, dto);
+				updatedModelList.add(model);
 			} else {
 				log.error("updateAll({}) : object not found", dto.getId()); 
 			}
