@@ -16,7 +16,7 @@ import fr.vvlabs.stackhelper.dto.AbstractDto;
  * @param <S> the read dto type
  * @param <U> the create / update type
  */
-public interface AbstractMapper<T extends Persistable<K>, K extends Serializable, S extends AbstractDto<K>, U extends AbstractDto<K>> {
+public interface AbstractMapper<T extends Persistable<K>, K extends Serializable, S extends AbstractDto<K>> {
 
 	// ===========================================================
 	// Methods
@@ -29,12 +29,4 @@ public interface AbstractMapper<T extends Persistable<K>, K extends Serializable
 	 * @return the s
 	 */
 	public S mapToDto(final T model);
-	
-	/**
-	 * Convert write dto to model.
-	 *
-	 * @param writeDto the write dto
-	 * @return the t
-	 */
-	public T mapToModel(final U writeDto);
 }

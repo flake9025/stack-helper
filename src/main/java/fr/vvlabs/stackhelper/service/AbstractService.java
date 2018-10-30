@@ -1,6 +1,8 @@
 package fr.vvlabs.stackhelper.service;
 
 import java.io.Serializable;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -36,7 +38,34 @@ public abstract class AbstractService<T extends Persistable<K>, K extends Serial
 	private CrudRepository<T, K> dao;
 
 	@Autowired
-	private AbstractMapper<T, K, S, U> mapper;
+	private AbstractMapper<T, K, S> mapper;
+	
+    /**
+     * Model class name
+     */
+    private Class<T> modelType;
+
+	// ===========================================================
+	// Constructors
+	// ===========================================================
+	
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public AbstractService() {
+        Class obtainedClass = getClass();
+        Type genericSuperclass = null;
+        while (obtainedClass != null) {
+            genericSuperclass = obtainedClass.getGenericSuperclass();
+            if (genericSuperclass instanceof ParameterizedType) {
+                break;
+            }
+            obtainedClass = obtainedClass.getSuperclass();
+        }
+        ParameterizedType genericType = (ParameterizedType) genericSuperclass;
+        if(genericType != null) {
+        	this.modelType = (Class<T>) genericType.getActualTypeArguments()[0];
+        }
+    }
+
 
 	// ===========================================================
 	// Methods for/from SuperClass/Interfaces
@@ -112,7 +141,7 @@ public abstract class AbstractService<T extends Persistable<K>, K extends Serial
 	@Transactional
 	public K create(final U dto) {
 		K key = null;
-		T model = dao.save(mapper.mapToModel(dto));
+		T model = dao.save(mapToModel(dto));
 		if(model != null) {
 			key = model.getId();
 		} else {
@@ -129,7 +158,7 @@ public abstract class AbstractService<T extends Persistable<K>, K extends Serial
 	 */
 	public List<K> createAll(final List<U> dtoList) {
 		List<K> keyList = null;
-		Iterable<T> modelIterable = dao.saveAll(dtoList.stream().map(mapper::mapToModel).collect(Collectors.toList()));
+		Iterable<T> modelIterable = dao.saveAll(dtoList.stream().map(this::mapToModel).collect(Collectors.toList()));
 		if(modelIterable != null) {
 			List<T> modelList = StreamSupport.stream(modelIterable.spliterator(), false).collect(Collectors.toList());
 			if(!CollectionUtils.isEmpty(modelList)) {
@@ -236,4 +265,25 @@ public abstract class AbstractService<T extends Persistable<K>, K extends Serial
 	public void deleteAll(List<T> modelList) {
 		dao.deleteAll(modelList);
 	}
+	
+    
+    /**
+     * Convert Create DTO to Model
+     * 
+     * @param dto
+     * @return model
+     */
+    private T mapToModel(U dto) {
+        if (dto == null)
+            return null;
+
+        T model = null;
+        try {
+            model = modelType.newInstance();
+            updateModel(model, dto);
+        } catch (InstantiationException | IllegalAccessException e) {
+            log.error("toModel(...) KO: " + e, e);
+        }
+        return model;
+    }
 }
