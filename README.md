@@ -53,8 +53,10 @@ for example :
 @EqualsAndHashCode(callSuper = true)
 @ToString
 public class Pet extends AbstractModelGenereatedId<Integer>{
-    private String name;
-    private List<Pet> friends;
+	private String name;
+	@ManyToMany(cascade = CascadeType.ALL)
+	@JoinTable(name = "pet_friends", joinColumns = @JoinColumn(name = "pet_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "friend_id", referencedColumnName = "id"))
+	private List<Pet> friends;
 }
 ```
 
@@ -117,6 +119,7 @@ public interface PetMapper extends AbstractMapper<Pet, Integer, PetDTO> {
 If you don't want to use MapStruct, you can still write your own mapper class :
 
 ```java
+@Component
 public class PetMapperImpl implements AbstractMapper<Pet, Integer, PetDTO> {
 	@Override
 	public PetDTO mapToDto(Pet model){
