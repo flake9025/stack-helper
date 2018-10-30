@@ -24,6 +24,8 @@ It will produce a Web Controller and a Service Layer, with the following operati
 - delete list
 
 ### Prerequisites
+- JDK 8
+- Maven
 - Spring MVC (for REST Controllers)
 - Spring 5 (for IOC and Beans)
 - Spring Data 2 (for Persistence)
