@@ -59,6 +59,7 @@ for example :
 ```java
 @Repository
 public interface PetDao extends CrudRepository<Pet, Integer> {
+	public Pet findByName(String name);
 }
 ```
 
@@ -90,7 +91,7 @@ And a PetWriteDTO with less data, for create and update operations :
 @ToString
 public class PetWriteDTO extends AbstractDto<Integer> {
 	private String name;
-	private List<Long> friendsIds;
+	private List<Integer> friendsIds;
 }
 ```
 
@@ -149,7 +150,7 @@ public class PetService extends AbstractService<Pet, Integer, PetDTO, PetWriteDT
 		for(Integer friendId : dto.getFriendsIds()){
 			// pet friend should exists !
 			if(petDao.existsById(friendId)){
-				model.getFriends().add(petDao.findById(friendId));
+				model.getFriends().add(petDao.findById(friendId).get());
 			}
 		}
 		return model;
