@@ -282,7 +282,7 @@ public abstract class AbstractService<T extends Persistable<K>, K extends Serial
             model = modelType.newInstance();
             updateModel(model, dto);
         } catch (InstantiationException | IllegalAccessException e) {
-            log.error("toModel(...) KO: " + e, e);
+            log.error("mapToModel(...) KO: " + e, e);
         }
         return model;
     }
