@@ -90,20 +90,16 @@ for example :
 
 ```java
 @Mapper(componentModel="spring")
-public interface PetMapper extends AbstractMapper<Pet, Integer, PetDTO, PetWriteDTO> {
-
+public interface PetMapper extends AbstractMapper<Pet, Integer, PetDTO> {
 	@Override
 	public PetDTO mapToDto(Pet model);
-
-	@Override
-	public Pet mapToModel(PetWriteDTO writeDto);
 }
 ```
 
 If you don't want to use MapStruct, you can still write your own mapper class :
 
 ```java
-public class PetMapperImpl extends AbstractMapper<Pet, Integer, PetDTO, PetWriteDTO> {
+public class PetMapperImpl extends AbstractMapper<Pet, Integer, PetDTO> {
 
 	@Autowired
 	private PetDao petDao;
@@ -118,18 +114,6 @@ public class PetMapperImpl extends AbstractMapper<Pet, Integer, PetDTO, PetWrite
 		}
 		dto.setFriends(friends);
 		return dto;
-	}
-
-	@Override
-	public Pet mapToModel(PetWriteDTO writeDto){
-		Pet model = new Pet();
-		model.setName(dto.getName());
-		List<Pet> friends = new ArrayList<Pet>());
-		for(Integer friendId : model.getFriendsIds()){
-			friends.add(petDao.findById(friendId));
-		}
-		dto.setFriends(friends);
-		return model;
 	}
 ```
 
