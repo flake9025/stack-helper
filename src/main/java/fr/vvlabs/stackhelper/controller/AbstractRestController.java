@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import fr.vvlabs.stackhelper.dto.AbstractDto;
@@ -50,7 +51,7 @@ public abstract class AbstractRestController<T extends Persistable<K>, K extends
 	 *
 	 * @return the object count
 	 */
-	@GetMapping(value="/count")
+	@GetMapping(value = "/count")
 	public ResponseEntity<Long> countAll() {
 		try {
 			return ResponseEntity.ok(service.countAll());
@@ -65,10 +66,14 @@ public abstract class AbstractRestController<T extends Persistable<K>, K extends
 	 *
 	 * @return the object list
 	 */
-	@GetMapping
-	public ResponseEntity<List<S>> findAll() {
+	@GetMapping(params = { "page", "size" })
+	public ResponseEntity<List<S>> findAll( //
+			@RequestParam(value = "page", defaultValue = "0") int page, //
+			@RequestParam(value = "size",  defaultValue = "30") int size, //
+			@RequestParam(value = "sort",  required = false) String sort //
+			) { //
 		try {
-			return ResponseEntity.ok(service.findAll());
+			return ResponseEntity.ok(service.findAll(page, size, sort));
 		} catch (Exception e) {
 			log.error("findAll() KO : {}", e.getMessage(), e);
 			throw new InternalServerErrorException(e.getMessage());
@@ -81,7 +86,7 @@ public abstract class AbstractRestController<T extends Persistable<K>, K extends
 	 * @param id the id
 	 * @return the object
 	 */
-	@GetMapping(value="/{id}")
+	@GetMapping(value = "/{id}")
 	public ResponseEntity<S> findById(@PathVariable K id) {
 		try {
 			S dto = service.findById(id);
@@ -102,127 +107,121 @@ public abstract class AbstractRestController<T extends Persistable<K>, K extends
 	 * @param dto the dto
 	 * @return the key
 	 */
-    @PostMapping
+	@PostMapping
 	public ResponseEntity<K> create(@RequestBody U dto) {
 		try {
 			K newKey = service.create(dto);
-			
-	        if (newKey == null)
-	            return ResponseEntity.noContent().build();
-	        
-	        URI location = ServletUriComponentsBuilder
-	                .fromCurrentRequest()
-	                .path("/{id}")
-	                .buildAndExpand(newKey)
-	                .toUri();
-	        
-	        return ResponseEntity.created(location).build();
+
+			if (newKey == null)
+				return ResponseEntity.noContent().build();
+
+			URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(newKey)
+					.toUri();
+
+			return ResponseEntity.created(location).build();
 		} catch (Exception e) {
 			log.error("create({}) KO : {}", dto, e.getMessage(), e);
 			throw new InternalServerErrorException(e.getMessage());
 		}
 	}
-    
+
 	/**
 	 * Create list.
 	 *
 	 * @param dto the dto
 	 * @return the key list
 	 */
-    @PostMapping(value="/createAll")
+	@PostMapping(value = "/createAll")
 	public ResponseEntity<List<K>> createAll(@RequestBody List<U> dtoList) {
 		try {
 			List<K> newKeyList = service.createAll(dtoList);
-			
-	        if (CollectionUtils.isEmpty(newKeyList))
-	            return ResponseEntity.noContent().build();
-	        
-	        return ResponseEntity.ok(newKeyList);
+
+			if (CollectionUtils.isEmpty(newKeyList))
+				return ResponseEntity.noContent().build();
+
+			return ResponseEntity.ok(newKeyList);
 		} catch (Exception e) {
 			log.error("createAll({}) KO : {}", dtoList, e.getMessage(), e);
 			throw new InternalServerErrorException(e.getMessage());
 		}
 	}
-    
+
 	/**
 	 * Update.
 	 *
 	 * @param dto the dto
 	 * @return the key
 	 */
-    @PutMapping(value="/{id}")
+	@PutMapping(value = "/{id}")
 	public ResponseEntity<K> update(@PathVariable K id, @RequestBody U dto) {
 		try {
 			K savedKey = service.update(id, dto);
-			
-	        if (savedKey == null)
-	            return ResponseEntity.noContent().build();
-	        
-	        URI location = ServletUriComponentsBuilder
-	                .fromCurrentRequest()
-	                .path("/{id}")
-	                .buildAndExpand(savedKey)
-	                .toUri();
-	        
-	        return ResponseEntity.created(location).build();
+
+			if (savedKey == null)
+				return ResponseEntity.noContent().build();
+
+			URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedKey)
+					.toUri();
+
+			return ResponseEntity.created(location).build();
 		} catch (Exception e) {
 			log.error("save({}) KO : {}", dto, e.getMessage(), e);
 			throw new InternalServerErrorException(e.getMessage());
 		}
 	}
-    
+
 	/**
 	 * Update list.
 	 *
 	 * @param dto the dto
 	 * @return the key list
 	 */
-    @PutMapping(value="/updateAll")
+	@PutMapping(value = "/updateAll")
 	public ResponseEntity<List<K>> updateAll(@RequestBody List<U> dtoList) {
 		try {
 			List<K> keyList = service.updateAll(dtoList);
-			
-	        if (CollectionUtils.isEmpty(keyList))
-	            return ResponseEntity.noContent().build();
-	        
-	        return ResponseEntity.ok(keyList);
+
+			if (CollectionUtils.isEmpty(keyList))
+				return ResponseEntity.noContent().build();
+
+			return ResponseEntity.ok(keyList);
 		} catch (Exception e) {
 			log.error("updateAll({}) KO : {}", dtoList, e.getMessage(), e);
 			throw new InternalServerErrorException(e.getMessage());
 		}
 	}
-    
-    /**
-     * Delete by id.
-     *
-     * @param id the id
-     * @return the response entity
-     */
-    @DeleteMapping(value="/{id}")
-    public ResponseEntity<Void> deleteById(@PathVariable K id) {
-    	try {
-    		service.deleteById(id);
-    		return ResponseEntity.ok().build();
-    	} catch(Exception e) {
+
+	/**
+	 * Delete by id.
+	 *
+	 * @param id the id
+	 * @return the response entity
+	 */
+	@DeleteMapping(value = "/{id}")
+	public ResponseEntity<Void> deleteById(@PathVariable K id) {
+		try {
+			service.deleteById(id);
+			return ResponseEntity.ok().build();
+		} catch (Exception e) {
 			log.error("delete({}) KO : {}", id, e.getMessage(), e);
-            return ResponseEntity.noContent().build();
-    	}
-    }
-    
-    /**
-     * Delete list.
-     *
-     * @param idList the id list
-     * @return the response entity
-     */
-    @DeleteMapping(value="/deleteAll")
-    public ResponseEntity<Void> deleteAll(@RequestBody List<K> idList) {
-    	try {
-    		service.deleteByIdList(idList);
-    		return ResponseEntity.ok().build();
-    	} catch(Exception e) {
+			return ResponseEntity.noContent().build();
+		}
+	}
+
+	/**
+	 * Delete list.
+	 *
+	 * @param idList the id list
+	 * @return the response entity
+	 */
+	@DeleteMapping(value = "/deleteAll")
+	public ResponseEntity<Void> deleteAll(@RequestBody List<K> idList) {
+		try {
+			service.deleteByIdList(idList);
+			return ResponseEntity.ok().build();
+		} catch (Exception e) {
 			log.error("deleteList({}) KO : {}", idList, e.getMessage(), e);
-            return ResponseEntity.noContent().build();
-    	}
-    }
+			return ResponseEntity.noContent().build();
+		}
+	}
 }

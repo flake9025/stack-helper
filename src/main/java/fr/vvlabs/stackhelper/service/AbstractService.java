@@ -10,8 +10,12 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Persistable;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
@@ -35,7 +39,7 @@ public abstract class AbstractService<T extends Persistable<K>, K extends Serial
 	// ===========================================================
 
 	@Autowired
-	private CrudRepository<T, K> dao;
+	private JpaRepository<T, K> dao;
 
 	@Autowired
 	private AbstractMapper<T, K, S> mapper;
@@ -92,7 +96,7 @@ public abstract class AbstractService<T extends Persistable<K>, K extends Serial
 	public long countAll() {
 		return dao.count();
 	}
-
+	
 	/**
 	 * Find all.
 	 *
@@ -101,6 +105,23 @@ public abstract class AbstractService<T extends Persistable<K>, K extends Serial
 	@Transactional(readOnly = true)
 	public List<S> findAll() {
 		return StreamSupport.stream(dao.findAll().spliterator(), false).map(mapper::mapToDto).collect(Collectors.toList());
+	}
+
+
+	/**
+	 * Find all with pagination and sorting.
+	 *
+	 * @return the read dto list
+	 */
+	@Transactional(readOnly = true)
+	public List<S> findAll(int page, int size, String sort) {
+		
+		Direction sortDirection = sort != null && sort.startsWith("-") ? Direction.DESC : Direction.ASC;
+		String[] sortFields = sort != null ? sort.split(",") : null;
+		Pageable pageableRequest = sortFields != null ? PageRequest.of(page, size, sortDirection, sortFields) : PageRequest.of(page, size);
+		Page<T> pagedModels = dao.findAll(pageableRequest);
+		List<T> models = pagedModels.getContent();
+		return models.stream().map(mapper::mapToDto).collect(Collectors.toList());
 	}
 
 	/**
