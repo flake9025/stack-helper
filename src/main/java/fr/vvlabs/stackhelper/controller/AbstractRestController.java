@@ -8,6 +8,7 @@ import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Persistable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
@@ -67,7 +68,7 @@ public abstract class AbstractRestController<T extends Persistable<K>, K extends
 	 * @return the object list
 	 */
 	@GetMapping(params = { "page", "size" })
-	public ResponseEntity<List<S>> findAll( //
+	public ResponseEntity<Page<S>> findAll( //
 			@RequestParam(value = "page", defaultValue = "0") int page, //
 			@RequestParam(value = "size",  defaultValue = "30") int size, //
 			@RequestParam(value = "sort",  required = false) String sort //

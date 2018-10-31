@@ -114,14 +114,12 @@ public abstract class AbstractService<T extends Persistable<K>, K extends Serial
 	 * @return the read dto list
 	 */
 	@Transactional(readOnly = true)
-	public List<S> findAll(int page, int size, String sort) {
+	public Page<S> findAll(int page, int size, String sort) {
 		
 		Direction sortDirection = sort != null && sort.startsWith("-") ? Direction.DESC : Direction.ASC;
 		String[] sortFields = sort != null ? sort.split(",") : null;
 		Pageable pageableRequest = sortFields != null ? PageRequest.of(page, size, sortDirection, sortFields) : PageRequest.of(page, size);
-		Page<T> pagedModels = dao.findAll(pageableRequest);
-		List<T> models = pagedModels.getContent();
-		return models.stream().map(mapper::mapToDto).collect(Collectors.toList());
+		return dao.findAll(pageableRequest).map(mapper::mapToDto);
 	}
 
 	/**
