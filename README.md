@@ -15,7 +15,7 @@ It will produce a Web Controller and a Service Layer, with the following operati
 - create
 - create list
 - count all
-- find all
+- find all with paging and sorting
 - find by ID
 - update by ID
 - update list
@@ -62,12 +62,12 @@ public class Pet extends AbstractModelGenereatedId<Integer>{
 ```
 
 ### Dao Layer
-All you have to do is to implement CrudRepository<Type, Primary Key> from Spring Data.
+All you have to do is to implement JpaRepository<Type, Primary Key> from Spring Data.
 for example :
 
 ```java
 @Repository
-public interface PetDao extends CrudRepository<Pet, Integer> {
+public interface PetDao extends JpaRepository<Pet, Integer> {
 	public Pet findByName(String name);
 }
 ```
