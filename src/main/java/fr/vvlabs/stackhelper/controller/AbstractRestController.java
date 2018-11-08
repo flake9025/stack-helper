@@ -77,8 +77,8 @@ public abstract class AbstractRestController<T extends Persistable<K>, K extends
 	@GetMapping(params = { "page", "size" })
 	public ResponseEntity<Page<S>> findAll( //
 			@QuerydslPredicate Predicate predicate, //
-			@RequestParam(value = "page", defaultValue = "0") int page, //
-			@RequestParam(value = "size",  defaultValue = "30") int size, //
+			@RequestParam(value = "page", required = false, defaultValue = "0") int page, //
+			@RequestParam(value = "size",  required = false, defaultValue = "30") int size, //
 			@RequestParam(value = "sort",  required = false) String sort //
 			) { //
 		try {
