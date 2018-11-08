@@ -178,7 +178,7 @@ for example :
 @Api
 public class PetController extends AbstractRestController<Pet, Integer, PetDTO, PetWriteDTO> {
 	@Override
-	@GetMapping(params = { "page", "size" })
+	@GetMapping
 	public ResponseEntity<Page<PetDTO>> findAll( //
 			@QuerydslPredicate(root = Pet.class) Predicate predicate, //
 			@RequestParam(value = "page", required = false, defaultValue = "0") int page, //
