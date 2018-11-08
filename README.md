@@ -190,7 +190,7 @@ public class PetController extends AbstractRestController<Pet, Integer, PetDTO, 
 ```
 
 ### Demo Project
-See the demo project with Pets and embedded H2 database :
+See the demo project with beautiful Pets :
 https://github.com/flake9025/stack-helper-demo
 
 ## Examples
