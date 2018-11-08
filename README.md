@@ -3,7 +3,8 @@
 - Master (1.0.0)
 
 ## Overview
-This project is a stack builder helper, which allows easy implementation of CRUD REST Services with customization, keeping focus on business logic instead of repetitive code.
+This project is a Spring Boot stack builder helper, which allows fast and easy implementation of OpenAPI 3.0 REST Services.
+It will help you focus on business logic instead of writing repetitive code for CRUD, Search, Paging and Sorting operations.
 It uses generics types for business objects :
 - Entity (Ex: Pet)
 - Primary Key type (ex: Integer, Long, String, etc)
@@ -15,7 +16,7 @@ It will produce a Web Controller and a Service Layer, with the following operati
 - create
 - create list
 - count all
-- find all with paging and sorting
+- find all with criterias, paging and sorting
 - find by ID
 - update by ID
 - update list
@@ -32,16 +33,11 @@ It will produce a Web Controller and a Service Layer, with the following operati
 
 ## Getting Started
 
-### Demo
-See the demo project with Pets and embedded H2 database :
-https://github.com/flake9025/stack-helper-demo
-
 ### Entities
 If you already have Spring Data Persistable entities, this is already fine.
 Otherwise, you can choose to add "implements Persistable<K>" where K is your primary key type.
-Or, you can choose to extend any helper of this project :
+Or, you can choose to extend the Entity helper of this project :
 - AbstractModel class : generic entity
-- AbstractModelGeneratedId class  : generic entity with generated Id
 	
 for example :
 
@@ -52,7 +48,7 @@ for example :
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class Pet extends AbstractModelGenereatedId<Integer>{
+public class Pet extends AbstractModel<Integer> {
 	private String name;
 	
 	@ManyToMany(cascade = CascadeType.ALL)
@@ -87,10 +83,10 @@ Here we have a PetDTO with full data for readings :
 @ToString
 public class PetDTO extends AbstractDto<Integer> {
 	private String name;
-	private List<PetDTO> friends;
+	private List<String> friends; // friends names
 }
 ```
-And a PetWriteDTO with less data, for create and update operations :
+And a PetWriteDTO with different / less data, for create and update operations :
 
 ```java
 @NoArgsConstructor
@@ -100,7 +96,7 @@ And a PetWriteDTO with less data, for create and update operations :
 @ToString
 public class PetWriteDTO extends AbstractDto<Integer> {
 	private String name;
-	private List<Integer> friendsIds;
+	private List<Integer> friendsIds; // friends ids
 }
 ```
 
@@ -127,11 +123,9 @@ public class PetMapperImpl implements AbstractMapper<Pet, Integer, PetDTO> {
 		PetDTO dto = new PetDTO();
 		dto.setId(model.getId());
 		dto.setName(model.getName());
-		List<PetDTO> friends = new ArrayList<PetDTO>();
 		for(Pet pet : model.getFriends()){
-			friends.add(mapToDto(pet));
+			dto.addFriend(pet.getName());
 		}
-		dto.setFriends(friends);
 		return dto;
 	}
 }
@@ -173,6 +167,8 @@ public class PetService extends AbstractService<Pet, Integer, PetDTO, PetWriteDT
 
 ### Controller layer
 All you have to do is to extend the abstract Controller class.
+Due to QueryDSL current limitations and type erasure, you have to override the "findAll" operation,
+in order to give "QuerydslPredicate" the entity type.
 for example :
 
 ```java
@@ -180,7 +176,33 @@ for example :
 @RequestMapping("/pets")
 @Api
 public class PetController extends AbstractRestController<Pet, Integer, PetDTO, PetWriteDTO> {
-	// crud endpoints are already defined !
-	// add only new services
+	@Override
+	@GetMapping(params = { "page", "size" })
+	public ResponseEntity<Page<PetDTO>> findAll( //
+			@QuerydslPredicate(root = Pet.class) Predicate predicate, //
+			@RequestParam(value = "page", required = false, defaultValue = "0") int page, //
+			@RequestParam(value = "size",  required = false, defaultValue = "30") int size, //
+			@RequestParam(value = "sort",  required = false) String sort //
+			) { //
+		return super.findAll(predicate, page, size, sort);
+	}
 }
+```
+
+### Demo Project
+See the demo project with beautiful Pets :
+https://github.com/flake9025/stack-helper-demo
+
+## Examples
+
+http://localhost:8080/pets
+
+```json
+{"content":[{"id":1,"name":"Cat","friends":null},{"id":2,"name":"Dog","friends":["Poney","Fish"]},{"id":3,"name":"Poney","friends":["Dog","Fish"]},{"id":4,"name":"Fish","friends":["Dog","Poney"]}],"pageable":{"sort":{"sorted":false,"unsorted":true},"offset":0,"pageSize":30,"pageNumber":0,"paged":true,"unpaged":false},"last":true,"totalPages":1,"totalElements":4,"size":30,"number":0,"sort":{"sorted":false,"unsorted":true},"numberOfElements":4,"first":true}
+```
+
+http://localhost:8080/pets?name=Dog&page=0
+
+```json
+{"content":[{"id":2,"name":"Dog","friends":["Poney","Fish"]}],"pageable":{"sort":{"sorted":false,"unsorted":true},"offset":0,"pageSize":30,"pageNumber":0,"paged":true,"unpaged":false},"last":true,"totalPages":1,"totalElements":1,"size":30,"number":0,"sort":{"sorted":false,"unsorted":true},"numberOfElements":1,"first":true}
 ```
