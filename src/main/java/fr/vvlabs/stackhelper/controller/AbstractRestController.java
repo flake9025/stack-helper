@@ -10,6 +10,7 @@ import javax.ws.rs.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Persistable;
+import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import com.querydsl.core.types.Predicate;
 
 import fr.vvlabs.stackhelper.dto.AbstractDto;
 import fr.vvlabs.stackhelper.service.AbstractService;
@@ -65,16 +68,22 @@ public abstract class AbstractRestController<T extends Persistable<K>, K extends
 	/**
 	 * Find all.
 	 *
+	 * @param predicate the querydsl predicate
+	 * @param page the page
+	 * @param size the size
+	 * @param sort the sort
 	 * @return the object list
 	 */
 	@GetMapping(params = { "page", "size" })
 	public ResponseEntity<Page<S>> findAll( //
+			@QuerydslPredicate Predicate predicate, //
 			@RequestParam(value = "page", defaultValue = "0") int page, //
 			@RequestParam(value = "size",  defaultValue = "30") int size, //
 			@RequestParam(value = "sort",  required = false) String sort //
 			) { //
 		try {
-			return ResponseEntity.ok(service.findAll(page, size, sort));
+			
+			return ResponseEntity.ok(service.findAll(predicate, page, size, sort));
 		} catch (Exception e) {
 			log.error("findAll() KO : {}", e.getMessage(), e);
 			throw new InternalServerErrorException(e.getMessage());
@@ -150,6 +159,7 @@ public abstract class AbstractRestController<T extends Persistable<K>, K extends
 	/**
 	 * Update.
 	 *
+	 * @param id the id
 	 * @param dto the dto
 	 * @return the key
 	 */
