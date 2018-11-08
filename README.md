@@ -201,8 +201,8 @@ http://localhost:8080/pets
 {"content":[{"id":1,"name":"Cat","friends":null},{"id":2,"name":"Dog","friends":["Poney","Fish"]},{"id":3,"name":"Poney","friends":["Dog","Fish"]},{"id":4,"name":"Fish","friends":["Dog","Poney"]}],"pageable":{"sort":{"sorted":false,"unsorted":true},"offset":0,"pageSize":30,"pageNumber":0,"paged":true,"unpaged":false},"last":true,"totalPages":1,"totalElements":4,"size":30,"number":0,"sort":{"sorted":false,"unsorted":true},"numberOfElements":4,"first":true}
 ```
 
-http://localhost:8080/pets?name=Cat&sort=id&page=0&size=30
+http://localhost:8080/pets?name=Dog&page=0
 
 ```json
-{"content":[{"id":1,"name":"Cat","friends":null}],"pageable":{"sort":{"sorted":false,"unsorted":true},"offset":0,"pageSize":30,"pageNumber":0,"paged":true,"unpaged":false},"last":true,"totalPages":1,"totalElements":1,"size":30,"number":0,"sort":{"sorted":false,"unsorted":true},"numberOfElements":1,"first":true}
+{"content":[{"id":2,"name":"Dog","friends":["Poney","Fish"]}],"pageable":{"sort":{"sorted":false,"unsorted":true},"offset":0,"pageSize":30,"pageNumber":0,"paged":true,"unpaged":false},"last":true,"totalPages":1,"totalElements":1,"size":30,"number":0,"sort":{"sorted":false,"unsorted":true},"numberOfElements":1,"first":true}
 ```
