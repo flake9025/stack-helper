@@ -59,12 +59,12 @@ public class Pet extends AbstractModel<Integer> {
 ```
 
 ### Dao Layer
-All you have to do is to implement JpaRepository<Type, Primary Key> from Spring Data.
+All you have to do is to extend AbstractDAO<Type, Primary Key> , layer for Spring Data & QueryDSL.
 for example :
 
 ```java
 @Repository
-public interface PetDao extends JpaRepository<Pet, Integer> {
+public interface PetDao extends AbstractDAO<Pet, Integer> {
 	public Pet findByName(String name);
 }
 ```
