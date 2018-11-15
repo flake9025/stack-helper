@@ -10,7 +10,7 @@ It uses generics types for business objects :
 - Primary Key type (ex: Integer, Long, String, etc)
 - a "Read" DTO used for read operations (ex: findAll, etc)
 - a "Write" DTO used for create/update operations (ex: create, update).
-  Itcan be the same as the "Read" DTO.
+  It can be the same as the "Read" DTO.
 
 It will produce a Web Controller and a Service Layer, with the following operations :
 - create
@@ -241,12 +241,14 @@ http://localhost:8080/pets?age=8&male=true
 ## Known Issues
 
 - QueryDSL Predicate does not implement Generics
+
 Due to QueryDSL current limitations and type erasure, you have to override the "findAll" operation in all REST Controllers,
 in order to give "QuerydslPredicate" the entity type. I hope it will be fixed in a near future.
 
 ## What's next ?
 
 - QueryDSL Filters
+
 Current query dsl filters are directly applied from the rest service to the Entity, using entity fields names.
 In the next release, filters will be applied using the "Read DTO" fields names.
 For example, if a Pet has a "boolean male" attribute, and the PetDTO has a "boolean sex" attribute, user will have to filter with the "sex" name, not with "male". User must not know the database model.
