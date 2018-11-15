@@ -238,12 +238,27 @@ http://localhost:8080/pets?age=8&male=true
 {"content":[{"id":8,"name":"Cachou","age":8,"male":true,"friends":["Uline"]}],"pageable":{"sort":{"sorted":false,"unsorted":true},"offset":0,"pageSize":30,"pageNumber":0,"unpaged":false,"paged":true},"totalPages":1,"last":true,"totalElements":1,"size":30,"number":0,"sort":{"sorted":false,"unsorted":true},"numberOfElements":1,"first":true}
 ```
 
-## Known Issues
+## Known Issues and Limitations
 
 - QueryDSL Predicate does not implement Generics
 
 Due to QueryDSL current limitations and type erasure, you have to override the "findAll" operation in all REST Controllers,
 in order to give "QuerydslPredicate" the entity type. I hope it will be fixed in a near future.
+
+- QueryDSL Predicate default binding is not complete
+
+As explained in Spring Data documentation, the default binding is as follows:
+ - Object on simple properties as eq.
+ - Object on collection like properties as contains.
+ - Collection on simple properties as in.
+
+https://docs.spring.io/spring-data/commons/docs/current/reference/html/#core.web.type-safe
+
+I would like to add more bindings, for example :
+ - Like
+ - Contains
+ - Greater Than
+ - Lower Than
 
 ## What's next ?
 
