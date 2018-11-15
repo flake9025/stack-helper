@@ -184,8 +184,7 @@ public class PetService extends AbstractService<Pet, Integer, PetDTO, PetWriteDT
 
 ### Controller layer
 All you have to do is to extend the abstract Controller class.
-Due to QueryDSL current limitations and type erasure, you have to override the "findAll" operation,
-in order to give "QuerydslPredicate" the entity type.
+
 for example :
 
 ```java
@@ -238,4 +237,18 @@ http://localhost:8080/pets?age=8&male=true
 ```json
 {"content":[{"id":8,"name":"Cachou","age":8,"male":true,"friends":["Uline"]}],"pageable":{"sort":{"sorted":false,"unsorted":true},"offset":0,"pageSize":30,"pageNumber":0,"unpaged":false,"paged":true},"totalPages":1,"last":true,"totalElements":1,"size":30,"number":0,"sort":{"sorted":false,"unsorted":true},"numberOfElements":1,"first":true}
 ```
+
+## Known Issues
+
+-QueryDSL Predicate does not implement Generics
+Due to QueryDSL current limitations and type erasure, you have to override the "findAll" operation in all REST Controllers,
+in order to give "QuerydslPredicate" the entity type. I hope it will be fixed in a near future.
+
+## What's next ?
+
+-QueryDSL Filters
+Current query dsl filters are directly applied from the rest service to the Entity, using entity fields names.
+In the next release, filters will be applied using the "Read DTO" fields names.
+For example, if a Pet has a "boolean male" attribute, and the PetDTO has a "boolean sex" attribute, user will have to filter with the "sex" name, not with "male". User must not know the database model.
+
 
