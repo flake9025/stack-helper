@@ -16,7 +16,7 @@ It will produce a Web Controller and a Service Layer, with the following operati
 - create
 - create list
 - count all
-- find all with criterias, paging and sorting
+- find all with query language, paging and sorting
 - find by ID
 - update by ID
 - update list
