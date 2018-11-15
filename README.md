@@ -207,8 +207,10 @@ public class PetController extends AbstractRestController<Pet, Integer, PetDTO, 
 
 ### Demo Project
 See the demo project with beautiful Pets :
+
 https://github.com/flake9025/stack-helper-demo
-Try it !
+
+Try it !!!
 
 ## Database console
 
@@ -216,27 +218,19 @@ http://localhost:8080/h2-console
 
 ## Examples
 
-http://localhost:8080/pets
+All pets sorted by name
+http://localhost:8080/pets?sort=name
 
-```json
-{"content":[{"id":1,"name":"Vanille","age":14,"male":false,"friends":[]},{"id":2,"name":"Teddy","age":5,"male":true,"friends":["Jobar","Neige"]},{"id":3,"name":"Jobar","age":4,"male":false,"friends":["Teddy","Neige"]},{"id":4,"name":"Neige","age":1,"male":false,"friends":["Teddy","Jobar"]},{"id":5,"name":"Uline","age":10,"male":false,"friends":["Neige","Cachou"]},{"id":6,"name":"Isis","age":10,"male":false,"friends":["Tchicky"]},{"id":7,"name":"Donught","age":2,"male":false,"friends":["Uline"]},{"id":8,"name":"Cachou","age":8,"male":true,"friends":["Uline"]},{"id":9,"name":"Tchicky","age":5,"male":true,"friends":["Vanille"]}],"pageable":{"sort":{"sorted":false,"unsorted":true},"offset":0,"pageSize":30,"pageNumber":0,"unpaged":false,"paged":true},"totalPages":1,"last":true,"totalElements":9,"size":30,"number":0,"sort":{"sorted":false,"unsorted":true},"numberOfElements":9,"first":true}
-```
+Pets with name = vanille
+http://localhost:8080/pets?name=vanille
 
-http://localhost:8080/pets?name=Vanille
-
-```json
-{"content":[{"id":1,"name":"Vanille","age":14,"male":false,"friends":[]}],"pageable":{"sort":{"sorted":false,"unsorted":true},"offset":0,"pageSize":30,"pageNumber":0,"unpaged":false,"paged":true},"totalPages":1,"last":true,"totalElements":1,"size":30,"number":0,"sort":{"sorted":false,"unsorted":true},"numberOfElements":1,"first":true}
-```
+Pets with age = 10
 http://localhost:8080/pets?age=10
 
-```json
-{"content":[{"id":5,"name":"Uline","age":10,"male":false,"friends":["Neige","Cachou"]},{"id":6,"name":"Isis","age":10,"male":false,"friends":["Tchicky"]}],"pageable":{"sort":{"sorted":false,"unsorted":true},"offset":0,"pageSize":30,"pageNumber":0,"unpaged":false,"paged":true},"totalPages":1,"last":true,"totalElements":2,"size":30,"number":0,"sort":{"sorted":false,"unsorted":true},"numberOfElements":2,"first":true}
-```
+Pets with age = 8 OR age = 10
+http://localhost:8080/pets?age=8&age=10
 
 http://localhost:8080/pets?age=8&male=true
-```json
-{"content":[{"id":8,"name":"Cachou","age":8,"male":true,"friends":["Uline"]}],"pageable":{"sort":{"sorted":false,"unsorted":true},"offset":0,"pageSize":30,"pageNumber":0,"unpaged":false,"paged":true},"totalPages":1,"last":true,"totalElements":1,"size":30,"number":0,"sort":{"sorted":false,"unsorted":true},"numberOfElements":1,"first":true}
-```
 
 ## Known Issues and Limitations
 
