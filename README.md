@@ -4,7 +4,7 @@
 
 ## Overview
 This project is a Spring Boot stack builder helper, which allows fast and easy implementation of OpenAPI 3.0 REST Services.
-It will help you focus on business logic instead of writing repetitive code for CRUD, Search, Paging and Sorting operations.
+It will help you focus on business logic instead of writing repetitive code for CRUD, Filtering, Paging and Sorting operations.
 It uses generics types for business objects :
 - Entity (Ex: Pet)
 - Primary Key type (ex: Integer, Long, String, etc)
@@ -27,7 +27,9 @@ It will produce a Web Controller and a Service Layer, with the following operati
 ## Prerequisites
 - JDK 8 
 - Maven
-- Spring, Spring MVC, Spring Data
+
+## Frameworks used
+- Spring IOC, Spring MVC, Spring Data
 - QueryDSL
 - Lombok
 - Slf4j
@@ -50,8 +52,12 @@ for example :
 @EqualsAndHashCode(callSuper = true)
 @ToString
 public class Pet extends AbstractModel<Integer> {
+	@Column
 	private String name;
-	
+	@Column
+	private int age;
+	@Column
+	private boolean male;
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "pet_friends", joinColumns = @JoinColumn(name = "pet_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "friend_id", referencedColumnName = "id"))
 	private List<Pet> friends;
@@ -78,12 +84,13 @@ Here we have a PetDTO with full data for readings :
 
 ```java
 @NoArgsConstructor
-@AllArgsConstructor
 @Data
 @EqualsAndHashCode(callSuper=true)
 @ToString
 public class PetDTO extends AbstractDto<Integer> {
 	private String name;
+	private int age;
+	private boolean male;
 	private List<String> friends; // friends names
 }
 ```
@@ -91,12 +98,13 @@ And a PetWriteDTO with different / less data, for create and update operations :
 
 ```java
 @NoArgsConstructor
-@AllArgsConstructor
 @Data
 @EqualsAndHashCode(callSuper=true)
 @ToString
 public class PetWriteDTO extends AbstractDto<Integer> {
 	private String name;
+	private int age;
+	private boolean male;
 	private List<Integer> friendsIds; // friends ids
 }
 ```
@@ -121,12 +129,14 @@ If you don't want to use MapStruct, you can still write your own mapper class :
 public class PetMapperImpl implements AbstractMapper<Pet, Integer, PetDTO> {
 	@Override
 	public PetDTO mapToDto(Pet model){
+		List<String> friends = model.getFriends().stream().map(Pet::getName).collect(Collectors.toList());
+		
 		PetDTO dto = new PetDTO();
 		dto.setId(model.getId());
 		dto.setName(model.getName());
-		for(Pet pet : model.getFriends()){
-			dto.addFriend(pet.getName());
-		}
+		dto.setAge(model.getAge());
+		dto.setMale(model.isMale());
+		dto.setFriends(friends);
 		return dto;
 	}
 }
@@ -153,12 +163,18 @@ public class PetService extends AbstractService<Pet, Integer, PetDTO, PetWriteDT
 		if(!dto.getName().isEmpty() && petDao.findByName(dto.getName()) == null) {
 			model.setName(dto.getName());
 		}
+		// age
+		if(dto.getAge() > 0) {
+			model.setAge(dto.getAge());
+		}
+		// sex
+		model.setMale(dto.isMale());
 		// check friends
 		if(!CollectionUtils.isEmpty(dto.getFriendsIds())) {
 			for(Integer friendId : dto.getFriendsIds()){
 				// pet friend should exists !
 				if(petDao.existsById(friendId)){
-					model.getFriends().add(petDao.findById(friendId).get());
+					model.addFriend(petDao.findById(friendId).get());
 				}
 			}
 		}
