@@ -10,13 +10,13 @@ It uses generics types for business objects :
 - Primary Key type (ex: Integer, Long, String, etc)
 - a "Read" DTO used for read operations (ex: findAll, etc)
 - a "Write" DTO used for create/update operations (ex: create, update).
-  Itcan be the same as the "Read" DTO.
+  It can be the same as the "Read" DTO.
 
 It will produce a Web Controller and a Service Layer, with the following operations :
 - create
 - create list
 - count all
-- find all with criterias, paging and sorting
+- find all with query language, paging and sorting
 - find by ID
 - update by ID
 - update list
@@ -184,8 +184,7 @@ public class PetService extends AbstractService<Pet, Integer, PetDTO, PetWriteDT
 
 ### Controller layer
 All you have to do is to extend the abstract Controller class.
-Due to QueryDSL current limitations and type erasure, you have to override the "findAll" operation,
-in order to give "QuerydslPredicate" the entity type.
+
 for example :
 
 ```java
@@ -208,18 +207,59 @@ public class PetController extends AbstractRestController<Pet, Integer, PetDTO, 
 
 ### Demo Project
 See the demo project with beautiful Pets :
+
 https://github.com/flake9025/stack-helper-demo
+
+Try it !!!
+
+## Database console
+
+http://localhost:8080/h2-console
 
 ## Examples
 
-http://localhost:8080/pets
+All pets sorted by name
+http://localhost:8080/pets?sort=name
 
-```json
-{"content":[{"id":1,"name":"Cat","friends":null},{"id":2,"name":"Dog","friends":["Poney","Fish"]},{"id":3,"name":"Poney","friends":["Dog","Fish"]},{"id":4,"name":"Fish","friends":["Dog","Poney"]}],"pageable":{"sort":{"sorted":false,"unsorted":true},"offset":0,"pageSize":30,"pageNumber":0,"paged":true,"unpaged":false},"last":true,"totalPages":1,"totalElements":4,"size":30,"number":0,"sort":{"sorted":false,"unsorted":true},"numberOfElements":4,"first":true}
-```
+Pets with name = vanille
+http://localhost:8080/pets?name=vanille
 
-http://localhost:8080/pets?name=Dog&page=0
+Pets with age = 10
+http://localhost:8080/pets?age=10
 
-```json
-{"content":[{"id":2,"name":"Dog","friends":["Poney","Fish"]}],"pageable":{"sort":{"sorted":false,"unsorted":true},"offset":0,"pageSize":30,"pageNumber":0,"paged":true,"unpaged":false},"last":true,"totalPages":1,"totalElements":1,"size":30,"number":0,"sort":{"sorted":false,"unsorted":true},"numberOfElements":1,"first":true}
-```
+Pets with age = 8 OR age = 10
+http://localhost:8080/pets?age=8&age=10
+
+http://localhost:8080/pets?age=8&male=true
+
+## Known Issues and Limitations
+
+- QueryDSL Predicate does not implement Generics
+
+Due to QueryDSL current limitations and type erasure, you have to override the "findAll" operation in all REST Controllers,
+in order to give "QuerydslPredicate" the entity type. I hope it will be fixed in a near future.
+
+- QueryDSL Predicate default binding is not complete
+
+As explained in Spring Data documentation, the default binding is as follows:
+ - Object on simple properties as eq.
+ - Object on collection like properties as contains.
+ - Collection on simple properties as in.
+
+https://docs.spring.io/spring-data/commons/docs/current/reference/html/#core.web.type-safe
+
+I would like to add more bindings, for example :
+ - Like
+ - Contains
+ - Greater Than
+ - Lower Than
+
+## What's next ?
+
+- QueryDSL Filters
+
+Current query dsl filters are directly applied from the rest service to the Entity, using entity fields names.
+In the next release, filters will be applied using the "Read DTO" fields names.
+For example, if a Pet has a "boolean male" attribute, and the PetDTO has a "boolean sex" attribute, user will have to filter with the "sex" name, not with "male". User must not know the database model.
+
+
