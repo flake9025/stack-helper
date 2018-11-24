@@ -19,16 +19,7 @@ import lombok.ToString;
 @MappedSuperclass
 @AllArgsConstructor
 @Data
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 @ToString
 public abstract class AbstractModel<K extends Serializable> extends AbstractPersistable<K> {
-
-	// ===========================================================
-	// Methods for/from SuperClass/Interfaces
-	// ===========================================================
-	
-	@Override
-	public void setId(final K id) {
-		super.setId(id);
-    }
 }
