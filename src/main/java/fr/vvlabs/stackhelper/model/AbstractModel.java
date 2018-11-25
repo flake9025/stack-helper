@@ -22,4 +22,17 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = false)
 @ToString
 public abstract class AbstractModel<K extends Serializable> extends AbstractPersistable<K> {
+	
+	// ===========================================================
+	// Methods for/from SuperClass/Interfaces
+	// ===========================================================
+	
+	/* (non-Javadoc)
+	 * @see org.springframework.data.jpa.domain.AbstractPersistable#setId(java.io.Serializable)
+	 * Override this method to get a public setId, otherwise create and update will not work !
+	 */
+	@Override
+	public void setId(final K id) {
+		super.setId(id);
+    }
 }
