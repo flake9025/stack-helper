@@ -211,6 +211,9 @@ public abstract class AbstractService<T extends Persistable<K>, K extends Serial
 		Optional<T> optionalModel = dao.findById(id);
 		if (optionalModel.isPresent()) {
 			T model = optionalModel.get();
+			// avoid NPE or different id bug !
+			dto.setId(id);
+			// update model
 			updateModel(model, dto);
 			key = dao.save(model).getId();
 		} else {

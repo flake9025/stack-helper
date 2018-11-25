@@ -166,13 +166,13 @@ public abstract class AbstractRestController<T extends Persistable<K>, K extends
 	@PutMapping(value = "/{id}")
 	public ResponseEntity<K> update(@PathVariable K id, @RequestBody U dto) {
 		try {
+			// update dto
 			K savedKey = service.update(id, dto);
-
+			
 			if (savedKey == null)
 				return ResponseEntity.noContent().build();
 
-			URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedKey)
-					.toUri();
+			URI location = ServletUriComponentsBuilder.fromCurrentRequest().build().toUri();
 
 			return ResponseEntity.created(location).build();
 		} catch (Exception e) {
