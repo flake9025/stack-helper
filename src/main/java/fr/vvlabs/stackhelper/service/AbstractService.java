@@ -18,8 +18,6 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import com.querydsl.core.types.Predicate;
-
 import fr.vvlabs.stackhelper.dao.AbstractDAO;
 import fr.vvlabs.stackhelper.dto.AbstractDto;
 import fr.vvlabs.stackhelper.mapper.AbstractMapper;
@@ -112,14 +110,13 @@ public abstract class AbstractService<T extends Persistable<K>, K extends Serial
 	/**
 	 * Find all with pagination and sorting.
 	 *
-	 * @param searchDtoList the search dto list
 	 * @param page the page
 	 * @param size the size
 	 * @param sort the sort
 	 * @return the read dto list
 	 */
 	@Transactional(readOnly = true)
-	public Page<S> findAll(Predicate predicate, int page, int size, String sort) {
+	public Page<S> findAll(int page, int size, String sort) {
 		// build search criterias
 		// choose between custom Specifications, RSQL and QueryDSL !
 		//Specification<T> specifications = buildSpecifications(searchDtoList)
@@ -129,7 +126,7 @@ public abstract class AbstractService<T extends Persistable<K>, K extends Serial
 		// build pageable request
 		Pageable pageableRequest = sortFields != null ? PageRequest.of(page, size, sortDirection, sortFields) : PageRequest.of(page, size);
 		// find all , then map results
-		return dao.findAll(predicate, pageableRequest).map(mapper::mapToDto);
+		return dao.findAll(pageableRequest).map(mapper::mapToDto);
 	}
 
 	/**
