@@ -44,7 +44,7 @@ public abstract class AbstractRestController<T extends Persistable<K>, K extends
 	// ===========================================================
 
 	@Autowired
-	private AbstractService<T, K, S, U> service;
+	protected AbstractService<T, K, S, U> service;
 
 	// ===========================================================
 	// Methods
