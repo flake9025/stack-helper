@@ -21,7 +21,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<javax.ws.version>2.1</javax.ws.version>
 		<javax.persistence.version>2.2</javax.persistence.version>
-		<spring.version>5.1.1.RELEASE</spring.version>
+		<spring.version>5.2.3.RELEASE</spring.version>
 		<spring.data.version>2.1.1.RELEASE</spring.data.version>
 		<lombok.version>1.18.2</lombok.version>
 	</properties>
